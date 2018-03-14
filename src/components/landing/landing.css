@@ -1,0 +1,24 @@
+.landing {
+	display: flex;
+	flex-direction: column;
+	width: 100vw;
+	height: 100vh;
+}
+
+.landing-content {
+	width: 90%;
+	text-align: center;
+	margin: 0 auto;
+}
+.landing-swap {
+	margin: 0 auto;
+}
+@media screen and (min-width: 642px) {
+	.landing {
+		width: 680px;
+		margin: 0 auto;
+	}
+	.landing-swap {
+		width: 600px;
+	}
+}

@@ -1,0 +1,65 @@
+.board-container {
+	width: 100vw;
+}
+.shortDesc,
+.date {
+	display: block;
+	line-height: 2rem;
+	margin: 0.5rem 0;
+}
+
+.date-prefix {
+	font-weight: 600;
+}
+.date-prefix,
+.date-suffix {
+	display: inline-block;
+	width: 50%;
+}
+.shortDesc-prefix {
+	font-weight: 600;
+}
+.shortDesc-prefix,
+.shortDesc-suffix {
+	display: inline-block;
+	width: 50%;
+}
+
+.shortDesc-suffix,
+.date-suffix {
+	text-align: center;
+	font-size: 0.9rem;
+}
+
+.header-container {
+	display: flex;
+	justify-content: space-between;
+	background-color: #039be5;
+}
+.board-logo {
+	width: 60%;
+	color: white;
+}
+.board-close-btn {
+	display: flex;
+	width: 40%;
+	align-items: center;
+	color: white;
+}
+@media screen and (min-width: 642px) {
+	.board-container {
+		width: 90vw;
+		margin: 0 auto;
+	}
+	.shortDesc {
+		display: inline-block;
+		width: 50%;
+	}
+	.date {
+		width: 50%;
+	}
+	.shortDesc-suffix,
+	.date-suffix {
+		text-align: center;
+	}
+}

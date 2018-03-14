@@ -1,0 +1,11 @@
+/* landing content */
+
+.landing-desc {
+	padding: 1.2rem 1.5rem;
+	font-size: 1.1rem;
+	line-height: 2.5rem;
+	letter-spacing: 0.03rem;
+}
+.landing-btn-container {
+	padding: 1rem 0;
+}
