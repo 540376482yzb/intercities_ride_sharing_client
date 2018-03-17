@@ -19,6 +19,7 @@ import requiresLogin from '../hoc/requireLogin'
 import jwtDecode from 'jwt-decode'
 import Snackbar from 'material-ui/Snackbar'
 import Profile from './profile'
+import * as moment from 'moment'
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)
@@ -32,10 +33,17 @@ export class Board extends React.Component {
 	closeDrawer = () => this.setState({ open: false })
 
 	componentDidMount() {
-		this.props.dispatch(fetchRides())
-		this.props.dispatch(refreshAuthToken(this.props.authToken))
+		this.getNewDate()
 	}
 
+	async getNewDate() {
+		try {
+			await this.props.dispatch(refreshAuthToken())
+			await this.props.dispatch(fetchRides())
+		} catch (e) {
+			console.log(e)
+		}
+	}
 	getRating(value) {
 		switch (value) {
 		case 1:
@@ -100,10 +108,10 @@ export class Board extends React.Component {
 									</span>
 								</div>
 								<div className="date">
-									<span className="date-prefix">ON</span>
+									<span className="date-prefix">DEPART</span>
 									<span className="date-suffix">
 										<Chip backgroundColor={blue300}>
-											{getSanitizedDate(ride.scheduleDate)}
+											{moment(ride.scheduleDate).fromNow()}
 										</Chip>
 									</span>
 								</div>

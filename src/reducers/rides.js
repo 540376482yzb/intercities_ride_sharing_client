@@ -10,7 +10,11 @@ import {
 	ACCEPT_RIDE_ERROR,
 	FETCH_RIDE_ERROR,
 	FETCH_RIDE_SUCCESS,
-	DELETE_REQUESTS_ERROR
+	DELETE_REQUESTS_ERROR,
+	EDIT_RIDE_ERROR,
+	EDIT_RIDE_SUCCESS,
+	ADD_RIDE_SUCCESS,
+	ADD_RIDE_ERROR
 } from '../actions/rides'
 
 const initialState = {
@@ -76,5 +80,18 @@ export default function rideReducer(state = initialState, action) {
 		newState = { ...state, error: action.error }
 		return newState
 	}
+	if (action.type === EDIT_RIDE_ERROR) {
+		return { ...state, error: action.error }
+	}
+	if (action.type === EDIT_RIDE_SUCCESS) {
+		return { ...state, error: null }
+	}
+	if (action.type === ADD_RIDE_ERROR) {
+		return { ...state, error: action.error }
+	}
+	if (action.type === ADD_RIDE_SUCCESS) {
+		return { ...state, error: null }
+	}
+
 	return state
 }

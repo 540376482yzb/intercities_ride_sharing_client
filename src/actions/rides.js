@@ -38,7 +38,10 @@ export const fetchRides = () => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(rides => dispatch(fetchRidesSuccess(rides)))
+		.then(rides => {
+			console.log(typeof rides[0].scheduleDate)
+			dispatch(fetchRidesSuccess(rides))
+		})
 		.catch(err => {
 			console.log(err)
 			dispatch(fetchRidesError(err))
@@ -55,6 +58,15 @@ export const hostFormClose = () => ({
 	type: HOST_FORM_CLOSE
 })
 
+export const ADD_RIDE_SUCCESS = 'ADD_RIDE_SUCCESS'
+export const addRideSuccess = () => ({
+	type: ADD_RIDE_SUCCESS
+})
+export const ADD_RIDE_ERROR = 'ADD_RIDE_ERROR'
+export const addRideError = error => ({
+	type: ADD_RIDE_ERROR,
+	error
+})
 export const addRide = ride => (dispatch, getState) => {
 	dispatch(fetchRidesRequest())
 	const authToken = getState().auth.authToken
@@ -68,8 +80,10 @@ export const addRide = ride => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(rides => dispatch(fetchRides()))
-		.catch(err => dispatch(fetchRidesError(err)))
+		.then(
+			rides => dispatch(addRideSuccess()),
+			err => dispatch(addRideError(err))
+		)
 }
 
 export const ASK_FOR_RIDE_ERROR = 'ASK_FOR_RIDE_ERROR'
@@ -182,11 +196,18 @@ export const editRideError = error => ({
 	type: EDIT_RIDE_ERROR,
 	error
 })
+export const EDIT_RIDE_SUCCESS = 'EDIT_RIDE_SUCCESS'
+export const editRideSuccess = () => ({
+	type: EDIT_RIDE_SUCCESS
+})
 export const editRide = (id, update) => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
+	console.log('action 190', id, update)
 	fetch(`${API_BASE_URL}/board/${id}`, {
 		method: 'PUT',
+		body: JSON.stringify(update),
 		headers: {
+			'Content-Type': 'application/json',
 			Authorization: `Bearer ${authToken}`
 		}
 	})
@@ -194,7 +215,8 @@ export const editRide = (id, update) => (dispatch, getState) => {
 		.then(res => res.json())
 		.then(
 			ride => {
-				Promise.resolve({ message: 'update successful', content: ride })
+				console.log('action 206', ride)
+				dispatch(editRideSuccess(ride))
 			},
 			err => {
 				dispatch(editRideError(err))

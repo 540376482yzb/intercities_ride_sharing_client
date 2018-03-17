@@ -2,6 +2,7 @@ import React from 'react'
 import GenericForm from '../board/generic-form'
 import { sentLocation } from '../../actions/location'
 import { connect } from 'react-redux'
+import * as moment from 'moment'
 export class EditForm extends React.Component {
 	getLocation() {
 		const locations = this.props.match.path.split('/')
@@ -15,11 +16,10 @@ export class EditForm extends React.Component {
 		if (this.props.rides) {
 			const myRide = this.props.rides.find(ride => ride.id === this.rideId)
 			const { driver, requests, match, id, ...prepareForm } = myRide
+			console.log(prepareForm)
 			return (
 				<div style={{ width: '340px', margin: '2rem auto' }}>
-					<GenericForm
-						initialValues={{ ...prepareForm, driver: myRide.driver.id }}
-					/>
+					<GenericForm initialValues={{ ...prepareForm }} />
 				</div>
 			)
 		}

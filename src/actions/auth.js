@@ -24,6 +24,7 @@ export const authUserError = error => ({
 })
 
 const storeAuthInfo = (authToken, dispatch) => {
+	console.log('did I run?')
 	dispatch(setAuthToken(authToken))
 	saveAuthToken(authToken)
 }

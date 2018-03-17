@@ -5,13 +5,15 @@ import { Field, reduxForm, reset } from 'redux-form'
 import MenuItem from 'material-ui/MenuItem'
 // import TextField from 'material-ui/TextField'
 import { withRouter } from 'react-router-dom'
-import { hostFormClose } from '../../actions/rides'
+import { hostFormClose, fetchRides } from '../../actions/rides'
 import TextInput from '../landing/input-text'
 import DateInput from './datePicker'
 import { addRide } from '../../actions/rides'
 import { editRide } from '../../actions/rides'
 // import jwtDecode from 'jwt-decode'
 import FlatButton from 'material-ui/FlatButton'
+import * as moment from 'moment'
+import { refreshAuthToken } from '../../actions/auth'
 export class GenericForm extends React.Component {
 	onSubmit(value) {
 		const {
@@ -28,7 +30,7 @@ export class GenericForm extends React.Component {
 			startState,
 			arriveCity,
 			arriveState,
-			scheduleDate,
+			scheduleDate: moment(scheduleDate).format(),
 			rideCost,
 			driver: this.props.driver,
 			disClaimer
@@ -36,15 +38,21 @@ export class GenericForm extends React.Component {
 
 		const currentRoute = this.props.match.url
 		if (currentRoute === '/board') {
-			this.props.dispatch(addRide(submitForm))
-			this.props.dispatch(hostFormClose())
+			this.sendAddRideRequest(submitForm)
 		} else {
 			this.sendEditRequest(submitForm)
 		}
 	}
+	async sendAddRideRequest(form) {
+		this.props.dispatch(hostFormClose())
+		await this.props.dispatch(addRide(form))
+		await this.props.dispatch(fetchRides())
+		await this.props.dispatch(refreshAuthToken())
+		console.log('hello')
+	}
 	async sendEditRequest(form) {
 		const rideId = this.props.match.params.id
-		const results = await this.props.dispatch(editRide(rideId, form))
+		await this.props.dispatch(editRide(rideId, form))
 		this.props.history.push('/board')
 	}
 	render() {
@@ -166,6 +174,12 @@ export class GenericForm extends React.Component {
 
 //make this configurable props function
 const afterSubmit = (result, dispatch) => dispatch(reset('host-form'))
+
+const mapStateToProps = state => {
+	return {
+		authToken: state.auth.authToken
+	}
+}
 export default withRouter(
 	reduxForm({
 		form: 'host-form',

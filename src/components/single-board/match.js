@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { fetchRide } from '../../actions/rides'
 import { sentLocation } from '../../actions/location'
+import * as moment from 'moment'
 export class Match extends React.Component {
 	componentDidMount() {
 		console.log(this.rideId)
@@ -62,7 +63,9 @@ export class Match extends React.Component {
 					</section>
 					<section>
 						<div>Journey will start on </div>
-						<div>{`${this.props.matchedRide.scheduleDate}`}</div>
+						<div>{`${moment(this.props.matchedRide.scheduleDate).format(
+							'MM DD YYYY'
+						)}`}</div>
 					</section>
 					<article>
 						<div>Fare Cost: $ {`${this.props.matchedRide.rideCost}`}</div>

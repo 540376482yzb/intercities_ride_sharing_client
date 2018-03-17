@@ -1,7 +1,7 @@
 import React from 'react'
 import Dialog from 'material-ui/Dialog'
 import FlatButton from 'material-ui/FlatButton'
-
+import * as moment from 'moment'
 // import TextField from 'material-ui/TextField'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
@@ -26,7 +26,10 @@ export class HostForm extends React.Component {
 					open={this.props.hostForm}
 					contentStyle={{ width: '350px' }}
 				>
-					<GenericForm driver={this.props.driver} />
+					<GenericForm
+						driver={this.props.driver}
+						initialValues={{ scheduleDate: moment().format() }}
+					/>
 				</Dialog>
 			</div>
 		)
