@@ -1,5 +1,5 @@
 import React from 'react'
-import { reduxForm, Field, SubmissionError, focus } from 'redux-form'
+import { reduxForm, Field, SubmissionError, focus, reset } from 'redux-form'
 // import { required, noEmpty, tooShort, isNumber } from './validators'
 // import { serverValidate } from './asyncValidator'
 // import MenuItem from 'material-ui/MenuItem'
@@ -8,10 +8,9 @@ import TextInput from '../landing/input-text'
 import RaisedButton from 'material-ui/RaisedButton'
 import SelectInput from './select-input'
 import MenuItem from 'material-ui/MenuItem'
-import SelectField from 'material-ui/SelectField'
 import './drawer-list.css'
 import { connect } from 'react-redux'
-import { hostFormOpen } from '../../actions/rides'
+import { hostFormOpen, narrowSearch } from '../../actions/rides'
 
 const textStyles = {
 	fontSize: '1rem',
@@ -24,19 +23,17 @@ export class DrawerList extends React.Component {
 		this.state = {
 			cities: null,
 			startState: null,
-			arriveState: null,
-			lastTimeFreshed: null
+			arriveState: null
 		}
 	}
 	componentWillReceiveProps(nextProps) {
-		if (!this.props.rides && nextProps.rides) {
+		if (this.props.rides !== nextProps.rides) {
 			this.mapCities(nextProps.rides)
 		}
 	}
-	componentDidMount() {
-		this.setState({ lastTimeFreshed: new Date().getTime() })
-	}
+
 	onSubmit(value) {
+		//Todo: implement feature to dispatch async fetch every 5 mins
 		console.log(value)
 		const newTime = new Date().getTime()
 		const timeLasted = Math.round(
@@ -57,10 +54,10 @@ export class DrawerList extends React.Component {
 		}
 		//local search
 		const result = this.props.rides.filter(ride => {
-			if (startCity && startCity !== ride.startCity.city) return false
-			if (startState && startState !== ride.startCity.state) return false
-			if (arriveCity && arriveCity !== ride.arriveCity.city) return false
-			if (arriveState && arriveState !== ride.arriveCity.state) return false
+			if (startCity && startCity !== ride.startCity) return false
+			if (startState && startState !== ride.startState) return false
+			if (arriveCity && arriveCity !== ride.arriveCity) return false
+			if (arriveState && arriveState !== ride.arriveState) return false
 			if (
 				Number(ride.rideCost) < Number(min) ||
 				Number(ride.rideCost) > Number(max)
@@ -69,25 +66,25 @@ export class DrawerList extends React.Component {
 			if (Number(ride.driver.rating) < Number(rating)) return false
 			return true
 		})
-		console.log(result)
+		this.props.dispatch(narrowSearch(result))
 	}
 	mapCities(rides) {
 		const cities = {}
 		rides.forEach(ride => {
-			if (!Object.keys(cities).includes(ride.startCity.state)) {
-				cities[ride.startCity.state] = []
+			if (!Object.keys(cities).includes(ride.startState)) {
+				cities[ride.startState] = []
 			}
-			if (!Object.keys(cities).includes(ride.arriveCity.state)) {
-				cities[ride.arriveCity.state] = []
+			if (!Object.keys(cities).includes(ride.arriveState)) {
+				cities[ride.arriveState] = []
 			}
-			if (Object.keys(cities).includes(ride.startCity.state)) {
-				if (!cities[ride.startCity.state].includes(ride.startCity.city)) {
-					cities[ride.startCity.state].push(ride.startCity.city)
+			if (Object.keys(cities).includes(ride.startState)) {
+				if (!cities[ride.startState].includes(ride.startCity)) {
+					cities[ride.startState].push(ride.startCity)
 				}
 			}
-			if (Object.keys(cities).includes(ride.arriveCity.state)) {
-				if (!cities[ride.arriveCity.state].includes(ride.arriveCity.city)) {
-					cities[ride.arriveCity.state].push(ride.arriveCity.city)
+			if (Object.keys(cities).includes(ride.arriveState)) {
+				if (!cities[ride.arriveState].includes(ride.arriveCity)) {
+					cities[ride.arriveState].push(ride.arriveCity)
 				}
 			}
 		})
@@ -260,8 +257,11 @@ export const mapStateToProps = state => {
 		rides: state.rideReducer.rides
 	}
 }
+
+const afterSubmit = (result, dispatch) => dispatch(reset('search-form'))
 export default withRouter(
 	reduxForm({
-		form: 'search-form'
+		form: 'search-form',
+		onSubmitSuccess: afterSubmit
 	})(connect(mapStateToProps)(DrawerList))
 )

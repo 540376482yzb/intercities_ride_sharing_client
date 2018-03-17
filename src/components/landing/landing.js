@@ -1,24 +1,38 @@
 import React from 'react'
 import './landing.css'
-import { Route } from 'react-router-dom'
+import { Route, withRouter } from 'react-router-dom'
+import { connect } from 'react-redux'
 import Intro from './landing-intro'
-import Form from './landing-form'
+import TabForm from './landing-form'
 import LandingHeader from './landing-header'
-export default class Landing extends React.Component {
+export class Landing extends React.Component {
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.authToken) {
+			this.props.history.push('/board')
+		}
+	}
 	render() {
 		return (
 			<div className="landing">
-				<LandingHeader height={6}/>
+				<LandingHeader height={6} />
 				<main className="landing-content">
 					<div className="landing-title">
 						<h2>Sharing A Ride</h2>
 					</div>
 					<div className="landing-swap">
 						<Route exact path="/landing" component={Intro} />
-						<Route path="/landing/secure" component={Form} />
+						<Route path="/landing/secure" component={TabForm} />
 					</div>
 				</main>
 			</div>
 		)
 	}
 }
+
+const mapStateToProps = state => {
+	return {
+		authToken: state.auth.authToken
+	}
+}
+
+export default withRouter(connect(mapStateToProps)(Landing))

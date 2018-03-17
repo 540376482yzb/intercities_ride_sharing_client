@@ -8,7 +8,6 @@ export default function TextInput({ multiLine, input, label, meta, ...rest }) {
 				{...input}
 				{...rest}
 				multiLine={multiLine}
-				hintText={label}
 				floatingLabelText={label}
 				errorText={meta.touched && meta.error}
 				autoComplete="off"

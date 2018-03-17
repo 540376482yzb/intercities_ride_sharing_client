@@ -12,17 +12,17 @@
 	font-weight: 600;
 }
 .date-prefix,
-.date-suffix {
+.shortDesc-prefix {
 	display: inline-block;
-	width: 50%;
+	width: 40%;
 }
 .shortDesc-prefix {
 	font-weight: 600;
 }
-.shortDesc-prefix,
-.shortDesc-suffix {
+.shortDesc-suffix,
+.date-suffix {
 	display: inline-block;
-	width: 50%;
+	width: 60%;
 }
 
 .shortDesc-suffix,

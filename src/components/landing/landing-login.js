@@ -5,14 +5,19 @@ import { reduxForm, Field, SubmissionError, focus } from 'redux-form'
 // import MenuItem from 'material-ui/MenuItem'
 import TextInput from './input-text'
 import RaisedButton from 'material-ui/RaisedButton'
+import { connect } from 'react-redux'
+import { authUser } from '../../actions/auth'
 export const LogIn = ({
 	submitSucceeded,
 	error,
 	handleSubmit,
 	pristine,
-	submitting
+	submitting,
+	dispatch
 }) => {
-	const submitMe = value => console.log(value)
+	const submitMe = value => {
+		dispatch(authUser(value))
+	}
 
 	let successMessage
 	if (submitSucceeded) {
@@ -51,4 +56,4 @@ export const LogIn = ({
 
 export default reduxForm({
 	form: 'logIn'
-})(LogIn)
+})(connect()(LogIn))

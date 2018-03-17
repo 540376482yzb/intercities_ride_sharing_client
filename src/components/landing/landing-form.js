@@ -5,15 +5,20 @@ import SwipeableViews from 'react-swipeable-views'
 import SignUp from './landing-signup'
 import LogIn from './landing-login'
 import './landing-form.css'
-import Paper from 'material-ui/Paper'
-export default class TabsExampleSwipeable extends React.Component {
+import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
+export class TabForm extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			slideIndex: 0
 		}
 	}
-
+	componentWillReceiveProps(nextProps) {
+		if (!this.props.currentUser && nextProps.currentUser) {
+			this.props.history.push('/board')
+		}
+	}
 	handleChange = value => {
 		this.setState({
 			slideIndex: value
@@ -52,3 +57,11 @@ export default class TabsExampleSwipeable extends React.Component {
 		)
 	}
 }
+
+const mapStateToProps = state => {
+	return {
+		currentUser: state.auth.currentUser
+	}
+}
+
+export default withRouter(connect(mapStateToProps)(TabForm))

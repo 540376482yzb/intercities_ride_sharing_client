@@ -2,17 +2,21 @@ import React from 'react'
 import { reduxForm, Field, SubmissionError, focus } from 'redux-form'
 // import { required, noEmpty, tooShort, isNumber } from './validators'
 // import { serverValidate } from './asyncValidator'
-// import MenuItem from 'material-ui/MenuItem'
 import TextInput from './input-text'
 import RaisedButton from 'material-ui/RaisedButton'
+import { registerUser } from '../../actions/auth'
 export const SignUp = ({
 	submitSucceeded,
 	error,
 	handleSubmit,
 	pristine,
-	submitting
+	submitting,
+	dispatch
 }) => {
-	const submitMe = value => console.log(value)
+	const submitMe = value => {
+		console.log(value)
+		dispatch(registerUser(value))
+	}
 
 	let successMessage
 	if (submitSucceeded) {

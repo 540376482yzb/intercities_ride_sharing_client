@@ -9,22 +9,31 @@ import '../landing/landing-header.css'
 import './board.css'
 import HostForm from './host-form.js'
 import { connect } from 'react-redux'
-import { fetchRides } from '../../actions/rides'
+import { fetchRides, clearSearch, askForRide } from '../../actions/rides'
+import { refreshAuthToken } from '../../actions/auth'
 import Chip from 'material-ui/Chip'
-import { blue300, indigo900 } from 'material-ui/styles/colors'
+import { blue300 } from 'material-ui/styles/colors'
 import RaisedButton from 'material-ui/RaisedButton'
+import { getSanitizedDate } from './utils'
+import requiresLogin from '../hoc/requireLogin'
+import jwtDecode from 'jwt-decode'
+import Snackbar from 'material-ui/Snackbar'
+import Profile from './profile'
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
-			open: false
+			open: false,
+			snackBar: false
+			// location: ''
 		}
 	}
-	openDrawer = () => this.setState({ open: !this.state.open })
+	openDrawer = () => this.setState({ open: true })
 	closeDrawer = () => this.setState({ open: false })
 
 	componentDidMount() {
 		this.props.dispatch(fetchRides())
+		this.props.dispatch(refreshAuthToken(this.props.authToken))
 	}
 
 	getRating(value) {
@@ -43,82 +52,115 @@ export class Board extends React.Component {
 			return '★★★★★'
 		}
 	}
-	getSanitizedDate(date) {
-		const re = 'T00'
-		const charIndex = date.search(re)
-		return date.slice(0, charIndex)
+
+	fireRequest(e) {
+		const rideId = e.currentTarget.closest('li').id
+		this.props.dispatch(askForRide(rideId, this.props.currentUser.id))
 	}
+	snackBarOpen = () => this.setState({ snackBar: true })
+
+	snackBarClose = () => this.setState({ snackBar: false })
+
+	openMyHost() {
+		return true
+	}
+
 	render() {
-		const rides = this.props.rides
 		let renderComponents = <div />
+		const rides = this.props.filteredRides || this.props.rides
 		if (rides) {
 			renderComponents = rides.map((ride, index) => {
 				return (
-					<Card key={index}>
-						<CardHeader
-							title={`${ride.driver.firstName} ${ride.driver.lastName}`}
-							titleStyle={{ fontWeight: 600, fontSize: '1rem' }}
-							subtitle={this.getRating(Number(ride.driver.rating))}
-							subtitleStyle={{ fontSize: '1rem', color: 'orange' }}
-							avatar="/images/person.svg"
-							actAsExpander={true}
-							showExpandableButton={true}
-						/>
-						<CardText>
-							<div className="shortDesc">
-								<span className="shortDesc-prefix">FROM</span>
-								<span className="shortDesc-suffix">
-									<Chip backgroundColor="#A5D6A7">{`${ride.startCity.city},${
-										ride.startCity.state
-									}`}</Chip>
-								</span>
-							</div>
-							<div className="shortDesc">
-								<span className="shortDesc-prefix">TO</span>
-								<span className="shortDesc-suffix">
-									<Chip backgroundColor="#FFA726">{`${ride.arriveCity.city},${
-										ride.arriveCity.state
-									}`}</Chip>
-								</span>
-							</div>
-							<div className="date">
-								<span className="date-prefix">ON</span>
-								<span className="date-suffix">
-									<Chip backgroundColor={blue300}>
-										{this.getSanitizedDate(ride.scheduleDate)}
-									</Chip>
-								</span>
-							</div>
-						</CardText>
-						<CardText expandable={true}>
-							<header />
-							<section>
-								<div>
-									<Chip backgroundColor="#FCE4EC">
-										<strong>Fare Cost is ${ride.rideCost}</strong>
-									</Chip>
+					<li key={index} id={ride.id} style={{ listStyle: 'none' }}>
+						<Card>
+							<CardHeader
+								title={`${ride.driver.firstName} ${ride.driver.lastName}`}
+								titleStyle={{ fontWeight: 600, fontSize: '1rem' }}
+								subtitle={this.getRating(Number(ride.driver.rating))}
+								subtitleStyle={{ fontSize: '1rem', color: 'orange' }}
+								avatar="/images/person.svg"
+								actAsExpander={true}
+								showExpandableButton={true}
+							/>
+							<CardText>
+								<div className="shortDesc">
+									<span className="shortDesc-prefix">FROM</span>
+									<span className="shortDesc-suffix">
+										<Chip backgroundColor="#A5D6A7">{`${ride.startCity},${
+											ride.startState
+										}`}</Chip>
+									</span>
 								</div>
-								<header>
-									<h3>Rules to follow:</h3>
-								</header>
-								<p>{ride.disClaimer}</p>
-							</section>
-						</CardText>
-						<CardActions expandable={true}>
-							<RaisedButton label="REQUEST" primary={true} />
-						</CardActions>
-					</Card>
+								<div className="shortDesc">
+									<span className="shortDesc-prefix">TO</span>
+									<span className="shortDesc-suffix">
+										<Chip backgroundColor="#FFA726">{`${ride.arriveCity},${
+											ride.arriveState
+										}`}</Chip>
+									</span>
+								</div>
+								<div className="date">
+									<span className="date-prefix">ON</span>
+									<span className="date-suffix">
+										<Chip backgroundColor={blue300}>
+											{getSanitizedDate(ride.scheduleDate)}
+										</Chip>
+									</span>
+								</div>
+							</CardText>
+							<CardText expandable={true}>
+								<header />
+								<section>
+									<div>
+										<Chip backgroundColor="#FCE4EC">
+											<strong>Fare Cost is ${ride.rideCost}</strong>
+										</Chip>
+									</div>
+									<header>
+										<h3>Rules to follow:</h3>
+									</header>
+									<p>{ride.disClaimer}</p>
+								</section>
+							</CardText>
+							<CardActions expandable={true}>
+								<RaisedButton
+									label="REQUEST"
+									primary={true}
+									onClick={e => {
+										this.snackBarOpen()
+										this.fireRequest(e)
+									}}
+								/>
+							</CardActions>
+						</Card>
+					</li>
 				)
 			})
 		}
+		let renderClearSearch = ''
+		if (this.props.filteredRides) {
+			renderClearSearch = (
+				<RaisedButton onClick={() => this.props.dispatch(clearSearch())}>
+					Clear Search
+				</RaisedButton>
+			)
+		}
 		return (
-			<div className="board-container">
+			<div className="board-container" style={{ marginBottom: '2rem' }}>
+				<Snackbar
+					open={this.state.snackBar}
+					message="Your request has been sent"
+					autoHideDuration={3000}
+					onRequestClose={() => this.snackBarClose()}
+				/>
 				<AppBar
 					className="board-navbar"
-					title="Ride Sharing Infomation"
-					iconClassNameRight="muidocs-icon-navigation-expand-more"
+					title={`Hello, ${this.props.currentUser.firstName}`}
 					onLeftIconButtonClick={() => this.openDrawer()}
+					iconElementRight={!this.props.rides ? <div /> : <Profile />}
 				/>
+				{/* <div>{this.state.location}</div> */}
+				{renderClearSearch}
 				{renderComponents}
 				<Drawer
 					docked={false}
@@ -147,9 +189,13 @@ export class Board extends React.Component {
 }
 
 const mapStateToProps = state => {
+	const currentUser = jwtDecode(state.auth.authToken).user
 	return {
-		rides: state.rideReducer.rides
+		rides: state.rideReducer.rides,
+		filteredRides: state.rideReducer.filteredRides,
+		currentUser,
+		authToken: state.auth.authToken
 	}
 }
 
-export default connect(mapStateToProps)(Board)
+export default requiresLogin()(connect(mapStateToProps)(Board))
