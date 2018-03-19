@@ -38,14 +38,10 @@ export const fetchRides = () => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(rides => {
-			console.log(typeof rides[0].scheduleDate)
-			dispatch(fetchRidesSuccess(rides))
-		})
-		.catch(err => {
-			console.log(err)
-			dispatch(fetchRidesError(err))
-		})
+		.then(
+			rides => dispatch(fetchRidesSuccess(rides)),
+			err => dispatch(fetchRidesError(err))
+		)
 }
 
 export const HOST_FORM_OPEN = 'HOST_FORM_OPEN'
@@ -70,7 +66,7 @@ export const addRideError = error => ({
 export const addRide = ride => (dispatch, getState) => {
 	dispatch(fetchRidesRequest())
 	const authToken = getState().auth.authToken
-	fetch(`${API_BASE_URL}/board`, {
+	return fetch(`${API_BASE_URL}/board`, {
 		method: 'POST',
 		body: JSON.stringify(ride),
 		headers: {
@@ -91,11 +87,15 @@ export const askForRideError = error => ({
 	type: ASK_FOR_RIDE_ERROR,
 	error
 })
-
+export const ASK_FOR_RIDE_SUCCESS = 'ASK_FOR_RIDE_SUCCESS'
+export const askForRideSuccess = rideId => ({
+	type: ASK_FOR_RIDE_SUCCESS,
+	rideId
+})
 export const askForRide = (rideId, userId) => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
 
-	fetch(`${API_BASE_URL}/board/requests/${rideId}`, {
+	return fetch(`${API_BASE_URL}/board/requests/${rideId}`, {
 		method: 'PUT',
 		body: JSON.stringify({ userId }),
 		headers: {
@@ -105,10 +105,10 @@ export const askForRide = (rideId, userId) => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(ride => {
-			return Promise.resolve('done')
-		})
-		.catch(err => dispatch(askForRideError(err)))
+		.then(
+			res => dispatch(askForRideSuccess(res.content.ride.id)),
+			err => dispatch(askForRideError(err))
+		)
 }
 
 export const ACCEPT_RIDE_ERROR = 'ACCEPT_RIDE_ERROR'
@@ -122,7 +122,7 @@ export const acceptRide = (driverId, passengerId, rideId) => (
 	getState
 ) => {
 	const authToken = getState().auth.authToken
-	fetch(`${API_BASE_URL}/board/match/${rideId}`, {
+	return fetch(`${API_BASE_URL}/board/match/${rideId}`, {
 		method: 'PUT',
 		body: JSON.stringify({ driverId, passengerId }),
 		headers: {
@@ -132,10 +132,7 @@ export const acceptRide = (driverId, passengerId, rideId) => (
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(res => {
-			dispatch(deleteRequests(rideId))
-		})
-		.catch(acceptRideError)
+		.then(res => Promise.resolve('done'), err => dispatch(acceptRideError(err)))
 }
 
 export const FETCH_RIDE_SUCCESS = 'FETCH_RIDE_SUCCESS'
@@ -152,7 +149,7 @@ export const fetchRideError = error => ({
 
 export const fetchRide = rideId => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
-	fetch(`${API_BASE_URL}/board/${rideId}`, {
+	return fetch(`${API_BASE_URL}/board/${rideId}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${authToken}`
@@ -160,13 +157,10 @@ export const fetchRide = rideId => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(ride => {
-			console.log('fetch ride success', ride)
-			dispatch(fetchRideSuccess(ride))
-		})
-		.catch(err => {
-			dispatch(fetchRideError(err))
-		})
+		.then(
+			ride => dispatch(fetchRideSuccess(ride)),
+			err => dispatch(fetchRideError(err))
+		)
 }
 
 export const DELETE_REQUESTS_ERROR = 'DELETE_REQUESTS_ERROR'
@@ -174,18 +168,25 @@ export const deleteRequestsError = error => ({
 	type: DELETE_REQUESTS_ERROR,
 	error
 })
-export const deleteRequests = rideId => (dispatch, getState) => {
+
+export const DELETE_REQUESTS_SUCCESS = 'DELETE_REQUESTS_SUCCESS'
+export const deleteRequestsSuccess = ride => ({
+	type: DELETE_REQUESTS_SUCCESS,
+	ride
+})
+export const deleteRequests = (rideId, passengerId) => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
 	fetch(`${API_BASE_URL}/board/requests/${rideId}`, {
 		method: 'DELETE',
 		headers: {
 			Authorization: `Bearer ${authToken}`
-		}
+		},
+		body: JSON.stringify({ passengerId })
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(ride => {
-			return Promise.resolve('delete completed')
+		.then(() => {
+			return dispatch(deleteRequestsSuccess(rideId, passengerId))
 		})
 		.catch(err => {
 			dispatch(deleteRequestsError(err))
@@ -202,7 +203,6 @@ export const editRideSuccess = () => ({
 })
 export const editRide = (id, update) => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
-	console.log('action 190', id, update)
 	fetch(`${API_BASE_URL}/board/${id}`, {
 		method: 'PUT',
 		body: JSON.stringify(update),
@@ -220,6 +220,45 @@ export const editRide = (id, update) => (dispatch, getState) => {
 			},
 			err => {
 				dispatch(editRideError(err))
+			}
+		)
+}
+
+export const CANCEL_MATCH_SUCCESS = 'CANCEL_MATCH_SUCCESS'
+export const cancelMatchSuccess = (matchedRideId, driverId, passengerId) => ({
+	type: CANCEL_MATCH_SUCCESS,
+	matchedRideId,
+	driverId,
+	passengerId
+})
+export const CANCEL_MATCH_ERROR = 'CANCEL_MATCH_ERROR'
+export const cancelMatchError = error => ({
+	type: CANCEL_MATCH_ERROR,
+	error
+})
+export const cancelMatch = matchedRide => (dispatch, getState) => {
+	const authToken = getState().auth.authToken
+	const driverId = matchedRide.match[0].id
+	const passengerId = matchedRide.match[1].id
+	return fetch(`${API_BASE_URL}/board/match/${matchedRide.id}`, {
+		method: 'DELETE',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${authToken}`
+		},
+		body: JSON.stringify({ driverId, passengerId })
+	})
+		.then(res => normalizeResponseErrors(res))
+		.then(res => res.json())
+		.then(
+			res => {
+				console.log(res)
+				return dispatch(
+					cancelMatchSuccess(matchedRide.id, driverId, passengerId)
+				)
+			},
+			err => {
+				return dispatch(cancelMatchError(err))
 			}
 		)
 }

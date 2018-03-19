@@ -10,16 +10,15 @@ import './board.css'
 import HostForm from './host-form.js'
 import { connect } from 'react-redux'
 import { fetchRides, clearSearch, askForRide } from '../../actions/rides'
-import { refreshAuthToken } from '../../actions/auth'
+import { refreshAuthToken, fetchUser } from '../../actions/auth'
 import Chip from 'material-ui/Chip'
 import { blue300 } from 'material-ui/styles/colors'
 import RaisedButton from 'material-ui/RaisedButton'
-import { getSanitizedDate } from './utils'
 import requiresLogin from '../hoc/requireLogin'
-import jwtDecode from 'jwt-decode'
 import Snackbar from 'material-ui/Snackbar'
 import Profile from './profile'
 import * as moment from 'moment'
+import jwtDecode from 'jwt-decode'
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)
@@ -36,13 +35,10 @@ export class Board extends React.Component {
 		this.getNewDate()
 	}
 
-	async getNewDate() {
-		try {
-			await this.props.dispatch(refreshAuthToken())
-			await this.props.dispatch(fetchRides())
-		} catch (e) {
-			console.log(e)
-		}
+	getNewDate() {
+		this.props.dispatch(fetchUser(jwtDecode(this.props.authToken).user.id))
+		this.props.dispatch(fetchRides())
+		this.props.dispatch(refreshAuthToken())
 	}
 	getRating(value) {
 		switch (value) {
@@ -75,9 +71,17 @@ export class Board extends React.Component {
 
 	render() {
 		let renderComponents = <div />
+		if (!this.props.currentUser) return renderComponents
 		const rides = this.props.filteredRides || this.props.rides
 		if (rides) {
-			renderComponents = rides.map((ride, index) => {
+			const isHost = this.props.currentUser.host
+			const ridesWithNoMatch = rides.filter(ride => ride.match.length === 0)
+			renderComponents = ridesWithNoMatch.map((ride, index) => {
+				const requested = this.props.currentUser.sentRequests.find(
+					request => request === ride.id
+				)
+				if (ride.match.length === 0) {
+				}
 				return (
 					<li key={index} id={ride.id} style={{ listStyle: 'none' }}>
 						<Card>
@@ -134,6 +138,7 @@ export class Board extends React.Component {
 								<RaisedButton
 									label="REQUEST"
 									primary={true}
+									disabled={requested || isHost ? true : false}
 									onClick={e => {
 										this.snackBarOpen()
 										this.fireRequest(e)
@@ -197,11 +202,10 @@ export class Board extends React.Component {
 }
 
 const mapStateToProps = state => {
-	const currentUser = jwtDecode(state.auth.authToken).user
 	return {
 		rides: state.rideReducer.rides,
 		filteredRides: state.rideReducer.filteredRides,
-		currentUser,
+		currentUser: state.auth.currentUser,
 		authToken: state.auth.authToken
 	}
 }

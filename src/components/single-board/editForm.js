@@ -2,7 +2,6 @@ import React from 'react'
 import GenericForm from '../board/generic-form'
 import { sentLocation } from '../../actions/location'
 import { connect } from 'react-redux'
-import * as moment from 'moment'
 export class EditForm extends React.Component {
 	getLocation() {
 		const locations = this.props.match.path.split('/')

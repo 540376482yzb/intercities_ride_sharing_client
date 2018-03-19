@@ -2,7 +2,6 @@ import React from 'react'
 import IconMenu from 'material-ui/IconMenu'
 import MenuItem from 'material-ui/MenuItem'
 import IconButton from 'material-ui/IconButton'
-import jwtDecode from 'jwt-decode'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { clearAuthToken } from '../../actions/auth'
@@ -13,36 +12,42 @@ export class Profile extends React.Component {
 		clearLocalAuthToken()
 	}
 	render() {
-		const editBtnRender = this.props.isHost ? (
+		if (!this.props.currentUser && !this.props.rides) return <div />
+		const myRide = this.props.rides.find(
+			ride => ride.driver.id === this.props.currentUser.id
+		)
+		const hasMatch = this.props.currentUser.match
+		const editBtnRender = myRide ? (
 			<MenuItem
 				primaryText="Edit Hosting Ride"
+				disabled={hasMatch ? true : false}
 				onClick={() =>
-					this.props.history.push(`/single-board/${this.props.myRide.id}/edit`)
+					this.props.history.push(`/single-board/${myRide.id}/edit`)
 				}
 			/>
 		) : (
 			undefined
 		)
+
+		const numberRequests = myRide ? myRide.requests.length : 0
 		const requestBtnRender =
-			this.props.numberRequests !== 0 ? (
+			numberRequests !== 0 ? (
 				<MenuItem
-					primaryText={`Pending Requests: ${this.props.numberRequests}`}
+					primaryText={`Pending Requests: ${numberRequests}`}
 					onClick={() =>
-						this.props.history.push(
-							`/single-board/${this.props.myRide.id}/requests`
-						)
+						this.props.history.push(`/single-board/${myRide.id}/requests`)
 					}
+					disabled={hasMatch ? true : false}
 				/>
 			) : (
 				undefined
 			)
-		const matchBtnRender = this.props.matchRoomId ? (
+		const matchRoomId = this.props.currentUser.match
+		const matchBtnRender = matchRoomId ? (
 			<MenuItem
 				primaryText="Match Room"
 				onClick={() =>
-					this.props.history.push(
-						`/single-board/${this.props.matchRoomId}/match`
-					)
+					this.props.history.push(`/single-board/${matchRoomId}/match`)
 				}
 			/>
 		) : (
@@ -70,19 +75,10 @@ export class Profile extends React.Component {
 	}
 }
 
-function findMyRide(user, rideState) {
-	const myRide = rideState.rides.filter(ride => ride.driver.id === user.id)
-	if (myRide.length === 0) return null
-	return myRide[0]
-}
 const mapStateToProps = state => {
-	const currentUser = jwtDecode(state.auth.authToken).user
-	const ride = findMyRide(currentUser, state.rideReducer)
 	return {
-		isHost: currentUser.host,
-		myRide: ride,
-		numberRequests: ride === null ? 0 : ride.requests.length,
-		matchRoomId: currentUser.match ? currentUser.match : null
+		currentUser: state.auth.currentUser,
+		rides: state.rideReducer.rides
 	}
 }
 export default withRouter(connect(mapStateToProps)(Profile))

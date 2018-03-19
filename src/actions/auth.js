@@ -2,6 +2,7 @@ import { API_BASE_URL } from '../config'
 import { normalizeResponseErrors } from './utils'
 import { SubmissionError } from 'redux-form'
 import { saveAuthToken, clearLocalAuthToken } from '../local-storage'
+// import jwtDecode from 'jwt-decode'
 export const AUTH_USER_REQUEST = 'AUTH_USER_REQUEST'
 export const authUserRequest = () => ({
 	type: AUTH_USER_REQUEST
@@ -24,7 +25,6 @@ export const authUserError = error => ({
 })
 
 const storeAuthInfo = (authToken, dispatch) => {
-	console.log('did I run?')
 	dispatch(setAuthToken(authToken))
 	saveAuthToken(authToken)
 }
@@ -65,7 +65,9 @@ export const refreshAuthToken = () => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(({ authToken }) => storeAuthInfo(authToken, dispatch))
+		.then(({ authToken }) => {
+			storeAuthInfo(authToken, dispatch)
+		})
 		.catch(err => {
 			dispatch(authUserError(err))
 			dispatch(clearAuthToken())
@@ -75,7 +77,7 @@ export const refreshAuthToken = () => (dispatch, getState) => {
 
 export const registerUser = user => dispatch => {
 	let password = user.password
-	fetch(`${API_BASE_URL}/auth/sign-up`, {
+	fetch(`${API_BASE_URL}/user/sign-up`, {
 		method: 'POST',
 		body: JSON.stringify(user),
 		headers: {
@@ -98,4 +100,34 @@ export const registerUser = user => dispatch => {
 				)
 			}
 		})
+}
+
+export const FETCH_USER_SUCCESS = 'FETCH_USER_SUCCESS'
+export const fetchUserSuccess = user => ({
+	type: FETCH_USER_SUCCESS,
+	user
+})
+
+export const FETCH_USER_ERROR = 'FETCH_USER_ERROR'
+export const fetchUserError = error => ({
+	type: FETCH_USER_ERROR,
+	error
+})
+
+export const fetchUser = userId => (dispatch, getState) => {
+	const authToken = getState().auth.authToken
+	fetch(`${API_BASE_URL}/user/${userId}`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${authToken}`
+		}
+	})
+		.then(res => normalizeResponseErrors(res))
+		.then(res => res.json())
+		.then(
+			res => {
+				dispatch(fetchUserSuccess(res))
+			},
+			err => dispatch(fetchUserError(err))
+		)
 }

@@ -1,19 +1,16 @@
 import React from 'react'
-// import RaisedButton from 'material-ui/RaisedButton'
 import SelectInput from './select-input'
 import { Field, reduxForm, reset } from 'redux-form'
 import MenuItem from 'material-ui/MenuItem'
-// import TextField from 'material-ui/TextField'
 import { withRouter } from 'react-router-dom'
 import { hostFormClose, fetchRides } from '../../actions/rides'
 import TextInput from '../landing/input-text'
 import DateInput from './datePicker'
 import { addRide } from '../../actions/rides'
 import { editRide } from '../../actions/rides'
-// import jwtDecode from 'jwt-decode'
 import FlatButton from 'material-ui/FlatButton'
 import * as moment from 'moment'
-import { refreshAuthToken } from '../../actions/auth'
+import { refreshAuthToken, fetchUser } from '../../actions/auth'
 export class GenericForm extends React.Component {
 	onSubmit(value) {
 		const {
@@ -43,12 +40,16 @@ export class GenericForm extends React.Component {
 			this.sendEditRequest(submitForm)
 		}
 	}
-	async sendAddRideRequest(form) {
+	sendAddRideRequest(form) {
 		this.props.dispatch(hostFormClose())
-		await this.props.dispatch(addRide(form))
-		await this.props.dispatch(fetchRides())
-		await this.props.dispatch(refreshAuthToken())
-		console.log('hello')
+		this.props
+			.dispatch(addRide(form))
+			.then(() => {
+				this.props.dispatch(fetchRides())
+				this.props.dispatch(fetchUser(this.props.driver))
+				this.props.dispatch(refreshAuthToken())
+			})
+			.catch(err => console.log(err))
 	}
 	async sendEditRequest(form) {
 		const rideId = this.props.match.params.id
@@ -174,12 +175,6 @@ export class GenericForm extends React.Component {
 
 //make this configurable props function
 const afterSubmit = (result, dispatch) => dispatch(reset('host-form'))
-
-const mapStateToProps = state => {
-	return {
-		authToken: state.auth.authToken
-	}
-}
 export default withRouter(
 	reduxForm({
 		form: 'host-form',

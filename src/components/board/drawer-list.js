@@ -13,7 +13,6 @@ import { connect } from 'react-redux'
 import { hostFormOpen, narrowSearch } from '../../actions/rides'
 
 const textStyles = {
-	fontSize: '1rem',
 	textAlign: 'center',
 	margin: '40px 0'
 }
@@ -129,6 +128,8 @@ export class DrawerList extends React.Component {
 			const availableCities = this.state.cities[this.state.arriveState]
 			renderArriveCity = this.renderCities(availableCities)
 		}
+		const isHost = this.props.isHost
+		console.log(isHost)
 		return (
 			<div style={{ width: '90%', margin: '0 auto' }} className="drawerList">
 				<section>
@@ -137,6 +138,7 @@ export class DrawerList extends React.Component {
 						label="HOST"
 						primary={true}
 						fullWidth={true}
+						disabled={isHost ? true : false}
 						type="submit"
 						onClick={() => {
 							this.props.dispatch(hostFormOpen())
@@ -254,7 +256,8 @@ export class DrawerList extends React.Component {
 }
 export const mapStateToProps = state => {
 	return {
-		rides: state.rideReducer.rides
+		rides: state.rideReducer.rides,
+		isHost: state.auth.currentUser.host
 	}
 }
 

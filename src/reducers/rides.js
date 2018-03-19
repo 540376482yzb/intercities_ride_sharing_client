@@ -11,10 +11,13 @@ import {
 	FETCH_RIDE_ERROR,
 	FETCH_RIDE_SUCCESS,
 	DELETE_REQUESTS_ERROR,
+	DELETE_REQUESTS_SUCCESS,
 	EDIT_RIDE_ERROR,
 	EDIT_RIDE_SUCCESS,
 	ADD_RIDE_SUCCESS,
-	ADD_RIDE_ERROR
+	ADD_RIDE_ERROR,
+	CANCEL_MATCH_ERROR,
+	CANCEL_MATCH_SUCCESS
 } from '../actions/rides'
 
 const initialState = {
@@ -76,6 +79,19 @@ export default function rideReducer(state = initialState, action) {
 		newState = { ...state, matchedRide: null, error: action.error }
 		return newState
 	}
+	if (action.type === DELETE_REQUESTS_SUCCESS) {
+		let updateRequests
+		const rides = state.rides.map(ride => {
+			if (ride.id === action.ride.id) {
+				updateRequests = ride.requests.filter(
+					request => request !== action.passengerId
+				)
+				ride.requests = updateRequests
+			}
+			return ride
+		})
+		return { ...state, rides, error: null }
+	}
 	if (action.type === DELETE_REQUESTS_ERROR) {
 		newState = { ...state, error: action.error }
 		return newState
@@ -91,6 +107,14 @@ export default function rideReducer(state = initialState, action) {
 	}
 	if (action.type === ADD_RIDE_SUCCESS) {
 		return { ...state, error: null }
+	}
+
+	if (action.type === CANCEL_MATCH_ERROR) {
+		return { ...state, error: action.error }
+	}
+	if (action.type === CANCEL_MATCH_SUCCESS) {
+		const rides = state.rides.filter(ride => ride.id !== action.matchedRideId)
+		return { ...state, error: null, rides, matchedRide: null }
 	}
 
 	return state

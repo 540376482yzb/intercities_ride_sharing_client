@@ -1,8 +1,10 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import { fetchRide } from '../../actions/rides'
+import { fetchRide, cancelMatch } from '../../actions/rides'
 import { sentLocation } from '../../actions/location'
 import * as moment from 'moment'
+import RaisedButton from 'material-ui/RaisedButton'
+import { withRouter } from 'react-router-dom'
 export class Match extends React.Component {
 	componentDidMount() {
 		console.log(this.rideId)
@@ -28,12 +30,20 @@ export class Match extends React.Component {
 			return '★★★★★'
 		}
 	}
+
+	onCancelMatch() {
+		this.props.history.push('/board')
+		this.props.dispatch(cancelMatch(this.props.matchedRide))
+	}
 	render() {
+		if (!this.props.currentUser || !this.props.currentUser.match)
+			return <h2>No match was found</h2>
 		this.getLocation()
 		this.rideId = this.props.match.params.id
 		let renderHostInfo = ''
 		let renderPassengerInfo = ''
 		let renderJourneyInfo = ''
+		let renderCancelTrip = ''
 		if (this.props.matchedRide) {
 			const host = this.props.matchedRide.match[0]
 			renderHostInfo = (
@@ -74,19 +84,31 @@ export class Match extends React.Component {
 					</article>
 				</main>
 			)
+			renderCancelTrip =
+				host.id === this.props.currentUser.id ? (
+					<RaisedButton
+						label="Cancel"
+						secondary={true}
+						onClick={() => this.onCancelMatch()}
+					/>
+				) : (
+					undefined
+				)
 		}
 		return (
 			<div>
 				{renderHostInfo}
 				{renderPassengerInfo}
 				{renderJourneyInfo}
+				{renderCancelTrip}
 			</div>
 		)
 	}
 }
 const mapStateToProps = state => {
 	return {
-		matchedRide: state.rideReducer.matchedRide
+		matchedRide: state.rideReducer.matchedRide,
+		currentUser: state.auth.currentUser
 	}
 }
-export default connect(mapStateToProps)(Match)
+export default withRouter(connect(mapStateToProps)(Match))

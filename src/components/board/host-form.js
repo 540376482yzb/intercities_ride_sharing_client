@@ -1,14 +1,11 @@
 import React from 'react'
 import Dialog from 'material-ui/Dialog'
-import FlatButton from 'material-ui/FlatButton'
 import * as moment from 'moment'
 // import TextField from 'material-ui/TextField'
 import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
 import { hostFormOpen, hostFormClose } from '../../actions/rides'
-import { addRide } from '../../actions/rides'
-import jwtDecode from 'jwt-decode'
 import GenericForm from './generic-form'
+import jwtDecode from 'jwt-decode'
 export class HostForm extends React.Component {
 	handleOpen = () => {
 		this.props.dispatch(hostFormOpen())
@@ -18,6 +15,7 @@ export class HostForm extends React.Component {
 	}
 
 	render() {
+		const driver = jwtDecode(this.props.authToken).user.id
 		return (
 			<div>
 				<Dialog
@@ -27,7 +25,7 @@ export class HostForm extends React.Component {
 					contentStyle={{ width: '350px' }}
 				>
 					<GenericForm
-						driver={this.props.driver}
+						driver={driver}
 						initialValues={{ scheduleDate: moment().format() }}
 					/>
 				</Dialog>
@@ -38,7 +36,7 @@ export class HostForm extends React.Component {
 
 const mapStateToProps = state => {
 	return {
-		driver: jwtDecode(state.auth.authToken).user.id,
+		authToken: state.auth.authToken,
 		hostForm: state.rideReducer.hostForm
 	}
 }

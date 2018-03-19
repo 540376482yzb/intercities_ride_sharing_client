@@ -8,7 +8,7 @@ export class Request extends React.Component {
 		const passengerId = e.currentTarget.closest('li').id
 		console.log(driverId, passengerId)
 		this.props.dispatch(acceptRide(driverId, passengerId, this.rideId))
-		this.props.history.push(`/single-board/${this.rideId}/match`)
+		this.props.history.push('/board')
 	}
 	getLocation() {
 		const locations = this.props.match.path.split('/')
