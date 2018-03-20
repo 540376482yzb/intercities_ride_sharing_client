@@ -5,6 +5,7 @@ import Request from './request'
 import Match from './match'
 import RequiresLogin from '../hoc/requireLogin'
 import EditForm from './editForm'
+import './single-board.css'
 export class SingleBoard extends React.Component {
 	constructor(props) {
 		super(props)
@@ -14,7 +15,7 @@ export class SingleBoard extends React.Component {
 	}
 	render() {
 		return (
-			<div>
+			<div className="single-board-container">
 				<SingleBoardHeader location={this.state.location} />
 				<main>
 					<Switch>

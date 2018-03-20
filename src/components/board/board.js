@@ -1,8 +1,4 @@
 import React from 'react'
-import AppBar from 'material-ui/AppBar'
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
-import Drawer from 'material-ui/Drawer'
 import DrawerList from './drawer-list'
 import LandingHeader from '../landing/landing-header'
 import '../landing/landing-header.css'
@@ -11,14 +7,15 @@ import HostForm from './host-form.js'
 import { connect } from 'react-redux'
 import { fetchRides, clearSearch, askForRide } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
-import Chip from 'material-ui/Chip'
-import { blue300 } from 'material-ui/styles/colors'
 import RaisedButton from 'material-ui/RaisedButton'
 import requiresLogin from '../hoc/requireLogin'
 import Snackbar from 'material-ui/Snackbar'
+import AppBar from 'material-ui/AppBar'
+import FlatButton from 'material-ui/FlatButton'
+import Drawer from 'material-ui/Drawer'
 import Profile from './profile'
-import * as moment from 'moment'
 import jwtDecode from 'jwt-decode'
+import CardInfo from './card-info'
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)
@@ -39,22 +36,6 @@ export class Board extends React.Component {
 		this.props.dispatch(fetchUser(jwtDecode(this.props.authToken).user.id))
 		this.props.dispatch(fetchRides())
 		this.props.dispatch(refreshAuthToken())
-	}
-	getRating(value) {
-		switch (value) {
-		case 1:
-			return '★☆☆☆☆'
-		case 2:
-			return '★★☆☆☆'
-		case 3:
-			return '★★★☆☆'
-		case 4:
-			return '★★★★☆'
-		case 5:
-			return '★★★★★'
-		default:
-			return '★★★★★'
-		}
 	}
 
 	fireRequest(e) {
@@ -83,69 +64,16 @@ export class Board extends React.Component {
 				if (ride.match.length === 0) {
 				}
 				return (
-					<li key={index} id={ride.id} style={{ listStyle: 'none' }}>
-						<Card>
-							<CardHeader
-								title={`${ride.driver.firstName} ${ride.driver.lastName}`}
-								titleStyle={{ fontWeight: 600, fontSize: '1rem' }}
-								subtitle={this.getRating(Number(ride.driver.rating))}
-								subtitleStyle={{ fontSize: '1rem', color: 'orange' }}
-								avatar="/images/person.svg"
-								actAsExpander={true}
-								showExpandableButton={true}
-							/>
-							<CardText>
-								<div className="shortDesc">
-									<span className="shortDesc-prefix">FROM</span>
-									<span className="shortDesc-suffix">
-										<Chip backgroundColor="#A5D6A7">{`${ride.startCity},${
-											ride.startState
-										}`}</Chip>
-									</span>
-								</div>
-								<div className="shortDesc">
-									<span className="shortDesc-prefix">TO</span>
-									<span className="shortDesc-suffix">
-										<Chip backgroundColor="#FFA726">{`${ride.arriveCity},${
-											ride.arriveState
-										}`}</Chip>
-									</span>
-								</div>
-								<div className="date">
-									<span className="date-prefix">DEPART</span>
-									<span className="date-suffix">
-										<Chip backgroundColor={blue300}>
-											{moment(ride.scheduleDate).fromNow()}
-										</Chip>
-									</span>
-								</div>
-							</CardText>
-							<CardText expandable={true}>
-								<header />
-								<section>
-									<div>
-										<Chip backgroundColor="#FCE4EC">
-											<strong>Fare Cost is ${ride.rideCost}</strong>
-										</Chip>
-									</div>
-									<header>
-										<h3>Rules to follow:</h3>
-									</header>
-									<p>{ride.disClaimer}</p>
-								</section>
-							</CardText>
-							<CardActions expandable={true}>
-								<RaisedButton
-									label="REQUEST"
-									primary={true}
-									disabled={requested || isHost ? true : false}
-									onClick={e => {
-										this.snackBarOpen()
-										this.fireRequest(e)
-									}}
-								/>
-							</CardActions>
-						</Card>
+					<li key={index} id={ride.id} className="entry-list">
+						<CardInfo
+							isHost={isHost}
+							requested={requested}
+							ride={ride}
+							onClick={e => {
+								this.snackBarOpen()
+								this.fireRequest(e)
+							}}
+						/>
 					</li>
 				)
 			})
@@ -159,7 +87,7 @@ export class Board extends React.Component {
 			)
 		}
 		return (
-			<div className="board-container" style={{ marginBottom: '2rem' }}>
+			<div className="board-container">
 				<Snackbar
 					open={this.state.snackBar}
 					message="Your request has been sent"
@@ -167,14 +95,14 @@ export class Board extends React.Component {
 					onRequestClose={() => this.snackBarClose()}
 				/>
 				<AppBar
-					className="board-navbar"
+					style={{ backgroundColor: '#FFA726' }}
 					title={`Hello, ${this.props.currentUser.firstName}`}
 					onLeftIconButtonClick={() => this.openDrawer()}
 					iconElementRight={!this.props.rides ? <div /> : <Profile />}
 				/>
-				{/* <div>{this.state.location}</div> */}
 				{renderClearSearch}
-				{renderComponents}
+				<ul className="entry-list-container">{renderComponents}</ul>
+
 				<Drawer
 					docked={false}
 					width={350}

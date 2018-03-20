@@ -33,7 +33,6 @@ export class DrawerList extends React.Component {
 
 	onSubmit(value) {
 		//Todo: implement feature to dispatch async fetch every 5 mins
-		console.log(value)
 		const newTime = new Date().getTime()
 		const timeLasted = Math.round(
 			(Number(newTime) - Number(this.state.lastTimeFreshed)) / (1000 * 60)
@@ -129,7 +128,6 @@ export class DrawerList extends React.Component {
 			renderArriveCity = this.renderCities(availableCities)
 		}
 		const isHost = this.props.isHost
-		console.log(isHost)
 		return (
 			<div style={{ width: '90%', margin: '0 auto' }} className="drawerList">
 				<section>

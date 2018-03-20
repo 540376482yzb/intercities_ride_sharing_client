@@ -1,34 +1,16 @@
 .board-container {
 	width: 100vw;
+	margin-bottom: "2rem";
+	background-color: #f5f5f5;
 }
-.shortDesc,
-.date {
-	display: block;
-	line-height: 2rem;
-	margin: 0.5rem 0;
+.entry-list-container {
+	list-style-type: none;
+	margin: 0 auto;
+	padding: 0 0 4rem 0;
 }
-
-.date-prefix {
-	font-weight: 600;
-}
-.date-prefix,
-.shortDesc-prefix {
-	display: inline-block;
-	width: 40%;
-}
-.shortDesc-prefix {
-	font-weight: 600;
-}
-.shortDesc-suffix,
-.date-suffix {
-	display: inline-block;
-	width: 60%;
-}
-
-.shortDesc-suffix,
-.date-suffix {
-	text-align: center;
-	font-size: 0.9rem;
+.entry-list {
+	margin-top: 1rem;
+	padding: 1rem 1rem;
 }
 
 .header-container {
@@ -46,20 +28,9 @@
 	align-items: center;
 	color: white;
 }
-@media screen and (min-width: 642px) {
+@media screen and (min-width: 780px) {
 	.board-container {
-		width: 90vw;
+		width: 85vw;
 		margin: 0 auto;
-	}
-	.shortDesc {
-		display: inline-block;
-		width: 50%;
-	}
-	.date {
-		width: 50%;
-	}
-	.shortDesc-suffix,
-	.date-suffix {
-		text-align: center;
 	}
 }

@@ -1,0 +1,166 @@
+.title-header {
+	display: flex;
+	padding: 0 0 2rem 1rem;
+	justify-content: space-around;
+}
+
+.avatar-frame {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden;
+	width: 15%;
+}
+
+.avatar-img {
+	display: block;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+}
+.title-bar {
+	display: block;
+	width: 75%;
+}
+.title-bar-sub1,
+.title-bar-sub2 {
+	padding: 0 1rem;
+}
+
+.content-container {
+	padding-top: 1rem;
+}
+.shortDesc,
+.date {
+	display: block;
+	padding: 1rem 1rem;
+	/* margin: 0.5rem 0; */
+}
+
+.date-prefix {
+	font-weight: 600;
+}
+.date-prefix,
+.shortDesc-prefix {
+	display: inline-block;
+	width: 40%;
+}
+.shortDesc-prefix {
+	font-weight: 600;
+}
+.shortDesc-suffix,
+.date-suffix {
+	display: inline-block;
+	width: 60%;
+	text-align: center;
+}
+
+.chip {
+	display: inline-block;
+	padding: 0.5rem 1.5rem;
+	border-radius: 1rem;
+	font-size: 0.9rem;
+	text-align: center;
+}
+
+.control-btn {
+	border: 0;
+	width: 100%;
+	border-radius: 5px;
+	height: 32px;
+	padding: 10px 0;
+	background-color: #eceff1;
+	font-weight: 500;
+	position: relative;
+}
+.control-btn:hover {
+	background-color: rgba(161, 136, 127, 0.27);
+}
+.control-btn-icon {
+	height: 12px;
+}
+
+.fare-cost-frame {
+	padding: 1rem 0;
+}
+.rule-frame {
+	padding: 0.5rem 0.5rem;
+}
+.rule-title {
+	font-size: 1.2rem;
+	font-weight: 500;
+}
+.requestBtn,
+.cancelBtn {
+	border: solid 0.5px #e0e0e0;
+	margin: 0.5rem 0.5rem;
+	padding: 8px 22px;
+	color: #f5f5f5;
+	font-weight: 535;
+	letter-spacing: 0.02rem;
+	font-size: 16px;
+}
+.requestBtn:disabled,
+.cancelBtn:disabled {
+	background-color: rgba(105, 105, 105, 0.048);
+	color: lightgrey;
+}
+.requestBtn {
+	background-color: #00bcd4;
+}
+.cancelBtn {
+	background-color: #f4511e;
+}
+
+hr.style-two {
+	border: 0;
+	height: 1px;
+	width: 85%;
+	margin: 0 auto;
+	background-image: linear-gradient(
+		to right,
+		rgba(0, 0, 0, 0),
+		rgba(0, 0, 0, 0.75),
+		rgba(0, 0, 0, 0)
+	);
+}
+
+.journey-info {
+	padding: 10px;
+}
+@media screen and (min-width: 642px) {
+	.title-container {
+		display: flex;
+		justify-content: space-around;
+	}
+	.title-header {
+		width: 40%;
+		display: flex;
+		padding: 0 0 2rem 1rem;
+		justify-content: space-around;
+	}
+	.spliter {
+		border-right: solid 1.5px rgba(0, 0, 0, 0.037);
+	}
+	.avatar-frame {
+		width: 48px;
+	}
+	.title-bar {
+		padding-left: 0.5rem;
+	}
+	.shortDesc {
+		display: inline-block;
+		width: 100%;
+	}
+	.date {
+		width: 100%;
+	}
+	.shortDesc-suffix,
+	.date-suffix {
+		text-align: left;
+	}
+	.shortDesc-suffix .innerDiv,
+	.date-suffix .innerDiv {
+		margin-left: 2rem;
+	}
+}

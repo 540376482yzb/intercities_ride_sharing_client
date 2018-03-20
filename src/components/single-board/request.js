@@ -2,6 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { acceptRide } from '../../actions/rides'
 import { sentLocation } from '../../actions/location'
+import { CardUserInfo } from '../board/card-info'
+import FlatButton from 'material-ui/FlatButton'
 export class Request extends React.Component {
 	onAcceptRide(e) {
 		const driverId = this.myRide.driver.id
@@ -22,23 +24,29 @@ export class Request extends React.Component {
 		let renderList = ''
 		if (lists) {
 			renderList = lists.map((list, index) => {
+				const userName = `${list.firstName} ${list.lastName}`
 				return (
-					<li key={index} id={list.id}>
-						<h4>{`${list.firstName} ${list.lastName}`}</h4>
-						<h6>{`${list.rating}`}</h6>
-						<button
+					<li key={index} id={list.id} style={{ listStyle: 'none' }}>
+						<CardUserInfo
+							user1={{
+								userName,
+								rating: list.rating,
+								avatar: '/images/girl.svg'
+							}}
+						/>
+						<FlatButton
+							label="Accept"
+							labelStyle={{ color: '#42A5F5' }}
 							onClick={e => {
 								this.onAcceptRide(e)
 							}}
-						>
-							Accept
-						</button>
-						<button>Decline</button>
+						/>
+						<FlatButton label="Decline" />
 					</li>
 				)
 			})
 		}
-		return <ul>{renderList}</ul>
+		return <ul style={{ paddingLeft: '0' }}>{renderList}</ul>
 	}
 }
 const mapStateToProps = state => {
