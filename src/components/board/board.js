@@ -81,9 +81,20 @@ export class Board extends React.Component {
 		let renderClearSearch = ''
 		if (this.props.filteredRides) {
 			renderClearSearch = (
-				<RaisedButton onClick={() => this.props.dispatch(clearSearch())}>
-					Clear Search
-				</RaisedButton>
+				<div
+					style={{
+						width: '100%',
+						height: '50px',
+						backgroundColor: 'rgb(238, 238, 238)',
+						display: 'flex',
+						alignItems: 'center'
+					}}
+				>
+					<RaisedButton
+						label="Clear Search"
+						onClick={() => this.props.dispatch(clearSearch())}
+					/>
+				</div>
 			)
 		}
 		return (

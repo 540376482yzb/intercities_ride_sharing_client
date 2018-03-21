@@ -42,7 +42,6 @@ export default function authReducer(state = initialState, action) {
 		return initialState
 	}
 	if (action.type === FETCH_USER_SUCCESS) {
-		console.log('line 39', action.user)
 		return { ...state, currentUser: action.user, error: null }
 	}
 	if (action.type === FETCH_USER_ERROR) {

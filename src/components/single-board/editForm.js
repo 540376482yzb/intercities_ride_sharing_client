@@ -1,7 +1,7 @@
 import React from 'react'
-import GenericForm from '../board/generic-form'
 import { sentLocation } from '../../actions/location'
 import { connect } from 'react-redux'
+import SimpleForm from '../board/simple-form'
 export class EditForm extends React.Component {
 	getLocation() {
 		const locations = this.props.match.path.split('/')
@@ -14,11 +14,17 @@ export class EditForm extends React.Component {
 		this.rideId = this.props.match.params.id
 		if (this.props.rides) {
 			const myRide = this.props.rides.find(ride => ride.id === this.rideId)
-			const { driver, requests, match, id, ...prepareForm } = myRide
-			console.log(prepareForm)
+			const { requests, match, id, ...prepareForm } = myRide
 			return (
 				<div style={{ width: '340px', margin: '2rem auto' }}>
-					<GenericForm initialValues={{ ...prepareForm }} />
+					<SimpleForm
+						startLabel="Start city"
+						arriveLabel="Arrive city"
+						costLabel="How much do you charge?"
+						dateLabel="When does it happen?"
+						operation="edit"
+						prepareForm={prepareForm}
+					/>
 				</div>
 			)
 		}

@@ -1,11 +1,10 @@
 import React from 'react'
 import Dialog from 'material-ui/Dialog'
-import * as moment from 'moment'
 // import TextField from 'material-ui/TextField'
 import { connect } from 'react-redux'
 import { hostFormOpen, hostFormClose } from '../../actions/rides'
-import GenericForm from './generic-form'
 import jwtDecode from 'jwt-decode'
+import SimpleForm from './simple-form'
 export class HostForm extends React.Component {
 	handleOpen = () => {
 		this.props.dispatch(hostFormOpen())
@@ -24,9 +23,13 @@ export class HostForm extends React.Component {
 					open={this.props.hostForm}
 					contentStyle={{ width: '350px' }}
 				>
-					<GenericForm
+					<SimpleForm
+						startLabel="Start city"
+						arriveLabel="Arrive city"
+						costLabel="How much do you charge?"
+						dateLabel="When does it happen?"
+						operation="host"
 						driver={driver}
-						initialValues={{ scheduleDate: moment().format() }}
 					/>
 				</Dialog>
 			</div>
