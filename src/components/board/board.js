@@ -5,7 +5,12 @@ import '../landing/landing-header.css'
 import './board.css'
 import HostForm from './host-form.js'
 import { connect } from 'react-redux'
-import { fetchRides, clearSearch, askForRide } from '../../actions/rides'
+import {
+	fetchRides,
+	clearSearch,
+	askForRide,
+	deleteRideSuccess
+} from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
 import RaisedButton from 'material-ui/RaisedButton'
 import requiresLogin from '../hoc/requireLogin'
@@ -21,21 +26,29 @@ export class Board extends React.Component {
 		super(props)
 		this.state = {
 			open: false,
-			snackBar: false
-			// location: ''
+			snackBar: false,
+			message: ''
+		}
+		this.fireNotification = message =>
+			new Promise((resolve, reject) => {
+				return resolve(message)
+			})
+	}
+	componentDidMount() {
+		this.getNewData()
+	}
+	componentWillReceiveProps(nextProps) {
+		if (!this.props.deletingRide && nextProps.deletingRide) {
+			this.getNewData()
 		}
 	}
 	openDrawer = () => this.setState({ open: true })
 	closeDrawer = () => this.setState({ open: false })
 
-	componentDidMount() {
-		this.getNewDate()
-	}
-
-	getNewDate() {
+	getNewData() {
 		this.props.dispatch(fetchUser(jwtDecode(this.props.authToken).user.id))
 		this.props.dispatch(fetchRides())
-		this.props.dispatch(refreshAuthToken())
+		this.props.dispatch(deleteRideSuccess())
 	}
 
 	fireRequest(e) {
@@ -70,8 +83,12 @@ export class Board extends React.Component {
 							requested={requested}
 							ride={ride}
 							onClick={e => {
-								this.snackBarOpen()
 								this.fireRequest(e)
+								this.fireNotification('request has been sent')
+									.then(msg => this.setState({ message: msg }))
+									.then(() => {
+										this.snackBarOpen()
+									})
 							}}
 						/>
 					</li>
@@ -98,10 +115,10 @@ export class Board extends React.Component {
 			)
 		}
 		return (
-			<div className="board-container">
+			<main className="board-container">
 				<Snackbar
 					open={this.state.snackBar}
-					message="Your request has been sent"
+					message={this.state.message}
 					autoHideDuration={3000}
 					onRequestClose={() => this.snackBarClose()}
 				/>
@@ -109,7 +126,19 @@ export class Board extends React.Component {
 					style={{ backgroundColor: '#FFA726' }}
 					title={`Hello, ${this.props.currentUser.firstName}`}
 					onLeftIconButtonClick={() => this.openDrawer()}
-					iconElementRight={!this.props.rides ? <div /> : <Profile />}
+					iconElementRight={
+						!this.props.rides ? (
+							<div />
+						) : (
+							<Profile
+								onAction={msg => {
+									this.fireNotification(msg)
+										.then(message => this.setState({ message }))
+										.then(() => this.snackBarOpen())
+								}}
+							/>
+						)
+					}
 				/>
 				{renderClearSearch}
 				<ul className="entry-list-container">{renderComponents}</ul>
@@ -135,7 +164,7 @@ export class Board extends React.Component {
 					<DrawerList onClick={() => this.closeDrawer()} />
 				</Drawer>
 				<HostForm />
-			</div>
+			</main>
 		)
 	}
 }
@@ -145,7 +174,8 @@ const mapStateToProps = state => {
 		rides: state.rideReducer.rides,
 		filteredRides: state.rideReducer.filteredRides,
 		currentUser: state.auth.currentUser,
-		authToken: state.auth.authToken
+		authToken: state.auth.authToken,
+		deletingRide: state.rideReducer.deletingRide
 	}
 }
 

@@ -1,0 +1,6 @@
+.deleteBtn {
+	color: #f44336;
+}
+.deleteBtn:disabled {
+	color: "grey";
+}

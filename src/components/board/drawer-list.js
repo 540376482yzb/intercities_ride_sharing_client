@@ -7,7 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton'
 import './drawer-list.css'
 import { connect } from 'react-redux'
 import { hostFormOpen } from '../../actions/rides'
-import SearchForm from './simple-form'
+import SearchForm from './search-form'
 const textStyles = {
 	textAlign: 'center',
 	margin: '40px 0'
@@ -44,7 +44,6 @@ export class DrawerList extends React.Component {
 					startLabel="Where does it start ?"
 					arriveLabel="Where does it arrive ?"
 					costLabel="Maximum cost"
-					operation="search"
 				/>
 			</div>
 		)

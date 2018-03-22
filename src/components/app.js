@@ -7,7 +7,7 @@ import SingleBoard from './single-board/singleBoard'
 export class App extends React.Component {
 	render() {
 		return (
-			<div>
+			<div style={{ backgroundColor: '#E0E0E0' }}>
 				<Switch>
 					<Redirect exact from="/" to="/landing" />
 					<Route path="/landing" component={Landing} />

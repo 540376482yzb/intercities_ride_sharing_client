@@ -3,7 +3,6 @@ import React from 'react'
 import Slider from 'material-ui/Slider'
 import RaisedButton from 'material-ui/RaisedButton'
 import PlacesAutocomplete from 'react-places-autocomplete'
-import { narrowSearch } from '../../actions/rides'
 import { connect } from 'react-redux'
 import DatePicker from 'material-ui/DatePicker'
 import { withRouter } from 'react-router-dom'
@@ -11,6 +10,7 @@ import { hostFormClose, fetchRides } from '../../actions/rides'
 import { addRide } from '../../actions/rides'
 import { editRide } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
+import TextField from 'material-ui/TextField'
 
 const labelStyles = {
 	display: 'block',
@@ -37,24 +37,26 @@ const inputStyles = {
 	// 	backgroundColor: '#fafafa'
 	// }
 }
-class SimpleForm extends React.Component {
+class EditForm extends React.Component {
 	constructor(props) {
 		super(props)
 		this.state = {
 			maxCost: 100,
 			startLoc: '',
 			arriveLoc: '',
-			scheduleDate: new Date()
+			scheduleDate: null,
+			disClaimer: ''
 		}
 		this.initialState = {
 			maxCost: 100,
 			startLoc: '',
 			arriveLoc: '',
-			scheduleDate: new Date()
+			scheduleDate: null
 		}
 		this.startLocOnChange = value => this.setState({ startLoc: value })
 		this.arriveLocOnChange = value => this.setState({ arriveLoc: value })
 		this.handleSlider = (event, value) => this.setState({ maxCost: value })
+		this.handleDisclaimer = (e, value) => this.setState({ disClaimer: value })
 	}
 
 	handleSubmit(e) {
@@ -67,82 +69,35 @@ class SimpleForm extends React.Component {
 			arriveCity: arriveCityAndState[0],
 			arriveState: arriveCityAndState[1]
 		}
-		// used in search form
-		if (this.props.operation === 'search') {
-			this.handleSearch(simpleForm)
-		}
-		//used in host form
-		if (this.props.operation === 'host') {
-			const scheduleDate = this.state.scheduleDate
-			const rideCost = this.state.maxCost
-			this.handleHost({
-				...simpleForm,
-				scheduleDate,
-				rideCost,
-				driver: this.props.driver
-			})
-		}
-		if (this.props.operation === 'edit') {
-			const scheduleDate = this.state.scheduleDate
-			const driver = this.props.prepareForm.driver.id
-			this.setState(this.props.prepareForm)
-			this.handleEdit({ ...simpleForm, scheduleDate, driver })
-		}
-	}
-	handleSearch(mySearchTerms) {
-		const results = this.props.rides.filter(ride => {
-			let pass = true
-			Object.keys(mySearchTerms).forEach(key => {
-				if (
-					mySearchTerms[key] &&
-					mySearchTerms[key].toUpperCase().trim() !== ride[key].trim()
-				) {
-					pass = false
-				}
-				if (Number(ride.rideCost) > Number(this.state.maxCost)) {
-					pass = false
-				}
-			})
-			return pass
-		})
-		this.props.dispatch(narrowSearch(results))
-		this.setState(this.initialState)
+		const scheduleDate = this.state.scheduleDate
+		const driver = this.props.prepareForm.driver.id
+		this.handleEdit({ ...simpleForm, scheduleDate, driver })
 	}
 
-	handleHost(submitForm) {
-		this.props.dispatch(hostFormClose())
-		this.props
-			.dispatch(addRide(submitForm))
-			.then(() => {
-				this.props.dispatch(fetchRides())
-				this.props.dispatch(fetchUser(this.props.driver))
-				this.props.dispatch(refreshAuthToken())
-			})
-			.catch(err => console.log(err))
-	}
 	handleEdit(submitForm) {
 		const rideId = this.props.match.params.id
 		this.props.dispatch(editRide(rideId, submitForm))
 		this.props.history.push('/board')
 	}
 	componentDidMount() {
-		if (this.props.operation === 'edit') {
-			const {
-				rideCost,
-				startCity,
-				startState,
-				arriveCity,
-				arriveState,
-				scheduleDate
-			} = this.props.prepareForm
-			const alterState = {
-				maxCost: rideCost,
-				startLoc: `${startCity},${startState}`,
-				arriveLoc: `${arriveCity},${arriveState}`,
-				scheduleDate
-			}
-			this.setState(alterState)
+		//initial state when entering edit mode
+		const {
+			rideCost,
+			startCity,
+			startState,
+			arriveCity,
+			arriveState,
+			scheduleDate,
+			disClaimer
+		} = this.props.prepareForm
+		const alterState = {
+			maxCost: rideCost,
+			startLoc: `${startCity},${startState}`,
+			arriveLoc: `${arriveCity},${arriveState}`,
+			scheduleDate,
+			disClaimer
 		}
+		this.setState(alterState)
 	}
 	render() {
 		const { startLabel, arriveLabel, costLabel, dateLabel } = this.props
@@ -168,54 +123,57 @@ class SimpleForm extends React.Component {
 			componentRestrictions: { country: 'us' }
 		}
 
-		const renderDatePicker =
-			this.props.operation === 'host' || 'edit' ? (
-				<div>
-					<label style={labelStyles} htmlFor="date">
-						{dateLabel}
-					</label>
-					<DatePicker
-						value={
-							typeof this.state.scheduleDate === 'string'
-								? new Date(this.state.scheduleDate)
-								: this.state.scheduleDate
-						}
-						floatingLabelText="Date"
-						id="date"
-						name="date"
-						onChange={(event, date) => this.setState({ scheduleDate: date })}
-					/>
-					<br />
-				</div>
-			) : (
-				undefined
-			)
-		if (this.props.operation === 'search') {
-			this.renderSearchBtn = (
-				<RaisedButton label="Search" fullWidth={true} type="submit" />
-			)
-		}
-		if (this.props.operation === 'host' || 'edit') {
-			this.renderCommonBtn = (
-				<div>
-					<RaisedButton
-						label="Submit"
-						labelColor="#f5f5f5"
-						type="submit"
-						backgroundColor="#8BC34A"
-						style={{ margin: '5px 10px' }}
-					/>
-					<RaisedButton
-						label="Cancel"
-						labelColor="#f5f5f5"
-						type="button"
-						backgroundColor="#FFBAB3"
-						style={{ margin: '5px 10px' }}
-						onClick={() => this.props.dispatch(hostFormClose())}
-					/>
-				</div>
-			)
-		}
+		const renderDatePicker = (
+			<div>
+				<label style={labelStyles} htmlFor="date">
+					{dateLabel}
+				</label>
+				<DatePicker
+					value={
+						typeof this.state.scheduleDate === 'string'
+							? new Date(this.state.scheduleDate)
+							: this.state.scheduleDate
+					}
+					floatingLabelText="Date"
+					id="date"
+					name="date"
+					onChange={(event, date) => this.setState({ scheduleDate: date })}
+				/>
+				<br />
+			</div>
+		)
+		const renderDisclaimer = (
+			<div>
+				<label htmlFor="rules">Rules to Follow:</label>
+				<TextField
+					name="rules"
+					id="rules"
+					multiLine={true}
+					fullWidth={true}
+					value={this.state.disClaimer}
+					onChange={this.handleDisclaimer}
+				/>
+			</div>
+		)
+		const renderCommonBtn = (
+			<div>
+				<RaisedButton
+					label="Submit"
+					labelColor="#f5f5f5"
+					type="submit"
+					backgroundColor="#8BC34A"
+					style={{ margin: '5px 10px' }}
+				/>
+				<RaisedButton
+					label="Cancel"
+					labelColor="#f5f5f5"
+					type="button"
+					backgroundColor="#FFBAB3"
+					style={{ margin: '5px 10px' }}
+					onClick={() => this.props.dispatch(hostFormClose())}
+				/>
+			</div>
+		)
 		return (
 			<form
 				onSubmit={e => this.handleSubmit(e)}
@@ -261,8 +219,8 @@ class SimpleForm extends React.Component {
 					onChange={this.handleSlider}
 					style={{ width: '95%' }}
 				/>
-				{this.renderSearchBtn}
-				{this.renderCommonBtn}
+				{renderDisclaimer}
+				{renderCommonBtn}
 			</form>
 		)
 	}
@@ -271,4 +229,4 @@ class SimpleForm extends React.Component {
 const mapStateToProps = state => ({
 	rides: state.rideReducer.rides
 })
-export default withRouter(connect(mapStateToProps)(SimpleForm))
+export default withRouter(connect(mapStateToProps)(EditForm))

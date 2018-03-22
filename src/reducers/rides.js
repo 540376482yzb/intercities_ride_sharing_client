@@ -17,7 +17,10 @@ import {
 	ADD_RIDE_SUCCESS,
 	ADD_RIDE_ERROR,
 	CANCEL_MATCH_ERROR,
-	CANCEL_MATCH_SUCCESS
+	CANCEL_MATCH_SUCCESS,
+	DELETE_RIDE_ERROR,
+	DELETE_RIDE_SUCCESS,
+	DELETE_RIDE_REQUEST
 } from '../actions/rides'
 
 const initialState = {
@@ -26,7 +29,8 @@ const initialState = {
 	loading: false,
 	error: null,
 	matchedRide: null,
-	hostForm: false
+	hostForm: false,
+	deletingRide: false
 }
 export default function rideReducer(state = initialState, action) {
 	let newState
@@ -115,6 +119,15 @@ export default function rideReducer(state = initialState, action) {
 	if (action.type === CANCEL_MATCH_SUCCESS) {
 		const rides = state.rides.filter(ride => ride.id !== action.matchedRideId)
 		return { ...state, error: null, rides, matchedRide: null }
+	}
+	if (action.type === DELETE_RIDE_REQUEST) {
+		return { ...state, error: null, deletingRide: true }
+	}
+	if (action.type === DELETE_RIDE_ERROR) {
+		return { ...state, error: action.error }
+	}
+	if (action.type === DELETE_RIDE_SUCCESS) {
+		return { ...state, error: null, deletingRide: false }
 	}
 
 	return state

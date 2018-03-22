@@ -1,6 +1,7 @@
+/* global moment */
 import React from 'react'
-import * as moment from 'moment'
 import './card-info.css'
+import * as moment from 'moment'
 export default class CardInfo extends React.Component {
 	constructor(props) {
 		super(props)
@@ -109,7 +110,7 @@ export function CardContent(props) {
 	return (
 		<main className="journey-info">
 			<div className="fare-cost-frame">
-				<div className="chip" style={{ backgroundColor: '#FF7043' }}>
+				<div className="chip" style={{ backgroundColor: 'orange' }}>
 					<strong>Fare Cost is ${ride.rideCost}</strong>
 				</div>
 			</div>
@@ -210,7 +211,7 @@ export function CardJourney(props) {
 				<span className="date-prefix">DEPART</span>
 				<span className="date-suffix">
 					<div className="chip" style={{ backgroundColor: '#ffb116' }}>
-						{moment(ride.scheduleDate).fromNow()}
+						{`${moment(ride.scheduleDate).fromNow()}`}
 					</div>
 				</span>
 			</div>

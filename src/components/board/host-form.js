@@ -4,7 +4,7 @@ import Dialog from 'material-ui/Dialog'
 import { connect } from 'react-redux'
 import { hostFormOpen, hostFormClose } from '../../actions/rides'
 import jwtDecode from 'jwt-decode'
-import SimpleForm from './simple-form'
+import CreateForm from './create-form'
 export class HostForm extends React.Component {
 	handleOpen = () => {
 		this.props.dispatch(hostFormOpen())
@@ -18,17 +18,17 @@ export class HostForm extends React.Component {
 		return (
 			<div>
 				<Dialog
-					title="Dialog With Custom Width"
+					title="Great adventure started here."
 					modal={true}
 					open={this.props.hostForm}
-					contentStyle={{ width: '350px' }}
+					contentStyle={{ width: '350px', paddingBottom: '50px' }}
+					autoScrollBodyContent={true}
 				>
-					<SimpleForm
+					<CreateForm
 						startLabel="Start city"
 						arriveLabel="Arrive city"
 						costLabel="How much do you charge?"
 						dateLabel="When does it happen?"
-						operation="host"
 						driver={driver}
 					/>
 				</Dialog>

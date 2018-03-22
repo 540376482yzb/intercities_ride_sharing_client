@@ -6,6 +6,8 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import { clearAuthToken } from '../../actions/auth'
 import { clearLocalAuthToken } from '../../local-storage'
+import { deleteRide } from '../../actions/rides'
+import './profile.css'
 export class Profile extends React.Component {
 	logOut() {
 		this.props.dispatch(clearAuthToken())
@@ -19,7 +21,7 @@ export class Profile extends React.Component {
 		const hasMatch = this.props.currentUser.match
 		const editBtnRender = myRide ? (
 			<MenuItem
-				primaryText="Edit Hosting Ride"
+				primaryText="Edit My Ride"
 				disabled={hasMatch ? true : false}
 				onClick={() =>
 					this.props.history.push(`/single-board/${myRide.id}/edit`)
@@ -28,7 +30,19 @@ export class Profile extends React.Component {
 		) : (
 			undefined
 		)
-
+		const deleteBtnRender = myRide ? (
+			<MenuItem
+				className="deleteBtn"
+				primaryText="Delete My Ride"
+				disabled={hasMatch ? true : false}
+				onClick={() => {
+					this.props.onAction('You Ride is Deleted')
+					this.props.dispatch(deleteRide(myRide.id, this.props.currentUser.id))
+				}}
+			/>
+		) : (
+			undefined
+		)
 		const numberRequests = myRide ? myRide.requests.length : 0
 		const requestBtnRender =
 			numberRequests !== 0 ? (
@@ -66,6 +80,7 @@ export class Profile extends React.Component {
 				anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
 			>
 				{editBtnRender}
+				{deleteBtnRender}
 				{requestBtnRender}
 				{matchBtnRender}
 

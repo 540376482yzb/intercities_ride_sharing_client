@@ -1,13 +1,23 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { fetchRide, cancelMatch } from '../../actions/rides'
+import { fetchUser } from '../../actions/auth'
 import { sentLocation } from '../../actions/location'
 import { withRouter } from 'react-router-dom'
 import { CardUserInfo, CardContent, CardJourney } from '../board/card-info'
 import './match.css'
+import Chat from './chat'
+import jwtDecode from 'jwt-decode'
 export class Match extends React.Component {
+	constructor(props) {
+		super(props)
+		this.rideId = this.props.match.params.id
+	}
 	componentDidMount() {
-		this.props.dispatch(fetchRide(this.rideId))
+		const userId = jwtDecode(this.props.authToken).user.id
+		this.props
+			.dispatch(fetchRide(this.rideId))
+			.then(() => this.props.dispatch(fetchUser(userId)))
 	}
 	getLocation() {
 		const locations = this.props.match.path.split('/')
@@ -38,7 +48,6 @@ export class Match extends React.Component {
 		if (!this.props.currentUser || !this.props.currentUser.match)
 			return <h2>No match was found</h2>
 		this.getLocation()
-		this.rideId = this.props.match.params.id
 		let renderUserInfo = ''
 		let renderJourneyInfo = ''
 		let renderContent = ''
@@ -75,20 +84,33 @@ export class Match extends React.Component {
 				/>
 			)
 		}
+		const renderChatRoom = this.props.currentUser ? (
+			<Chat currentUserName={this.props.currentUser.firstName} />
+		) : (
+			undefined
+		)
 		return (
 			<div className="match-board-container">
-				{renderUserInfo}
+				<header>
+					{renderUserInfo}
+					<hr />
+					<br />
+					{renderJourneyInfo}
+					<br />
+				</header>
 				<hr />
-				<br />
-				{renderJourneyInfo}
-				<br />
-				{renderContent}
+				<main className="match-body">
+					<section className="match-body-left">{renderChatRoom}</section>
+					<br />
+					<section className="match-body-right">{renderContent}</section>
+				</main>
 			</div>
 		)
 	}
 }
 const mapStateToProps = state => {
 	return {
+		authToken: state.auth.authToken,
 		matchedRide: state.rideReducer.matchedRide,
 		currentUser: state.auth.currentUser
 	}

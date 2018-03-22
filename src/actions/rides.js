@@ -252,13 +252,47 @@ export const cancelMatch = matchedRide => (dispatch, getState) => {
 		.then(res => res.json())
 		.then(
 			res => {
-				console.log(res)
 				return dispatch(
 					cancelMatchSuccess(matchedRide.id, driverId, passengerId)
 				)
 			},
 			err => {
 				return dispatch(cancelMatchError(err))
+			}
+		)
+}
+
+export const DELETE_RIDE_REQUEST = 'DELETE_RIDE_REQUEST'
+export const deleteRideRequest = () => ({
+	type: DELETE_RIDE_REQUEST
+})
+export const DELETE_RIDE_SUCCESS = 'DELETE_RIDE_SUCCESS'
+export const deleteRideSuccess = () => ({
+	type: DELETE_RIDE_SUCCESS
+})
+export const DELETE_RIDE_ERROR = 'DELETE_RIDE_ERROR'
+export const deleteRideError = error => ({
+	type: DELETE_RIDE_ERROR,
+	error
+})
+export const deleteRide = (rideId, currentUserId) => (dispatch, getState) => {
+	const authToken = getState().auth.authToken
+	return fetch(`${API_BASE_URL}/board/${rideId}`, {
+		method: 'DELETE',
+		body: JSON.stringify({ currentUserId }),
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${authToken}`
+		}
+	})
+		.then(res => normalizeResponseErrors(res))
+		.then(res => res.json())
+		.then(
+			res => {
+				return dispatch(deleteRideRequest())
+			},
+			err => {
+				return dispatch(deleteRideError(err))
 			}
 		)
 }

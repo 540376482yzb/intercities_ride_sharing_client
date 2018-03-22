@@ -2,7 +2,6 @@ import React from 'react'
 import './landing-intro.css'
 import RaisedButton from 'material-ui/RaisedButton'
 import { withRouter } from 'react-router-dom'
-import SimpleForm from '../board/simple-form'
 export class Intro extends React.Component {
 	render() {
 		return (
@@ -21,7 +20,6 @@ export class Intro extends React.Component {
 						}}
 					/>
 				</div>
-				<SimpleForm />
 			</main>
 		)
 	}

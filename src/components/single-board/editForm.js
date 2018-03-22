@@ -1,7 +1,7 @@
 import React from 'react'
 import { sentLocation } from '../../actions/location'
 import { connect } from 'react-redux'
-import SimpleForm from '../board/simple-form'
+import Form from './edit-form'
 export class EditForm extends React.Component {
 	getLocation() {
 		const locations = this.props.match.path.split('/')
@@ -17,12 +17,11 @@ export class EditForm extends React.Component {
 			const { requests, match, id, ...prepareForm } = myRide
 			return (
 				<div style={{ width: '340px', margin: '2rem auto' }}>
-					<SimpleForm
+					<Form
 						startLabel="Start city"
 						arriveLabel="Arrive city"
 						costLabel="How much do you charge?"
 						dateLabel="When does it happen?"
-						operation="edit"
 						prepareForm={prepareForm}
 					/>
 				</div>
