@@ -46,7 +46,7 @@ export default class Chat extends React.Component {
 		}
 
 		//set up io
-		this.socket = io('localhost:8080')
+		this.socket = io('https://ride-share-server.herokuapp.com')
 		this.socket.on('RECEIVE_MESSAGE', function(data) {
 			addMessage(data)
 		})
@@ -55,15 +55,21 @@ export default class Chat extends React.Component {
 			console.log(data)
 			this.setState({ msgHistory: [...this.state.msgHistory, data] })
 			console.log(this.state.msgHistory)
+			gotoBottom('chat')
 		}
 
 		this.sendMessage = e => {
 			e.preventDefault()
 			this.socket.emit('SEND_MESSAGE', {
 				author: this.state.username,
-				message: this.state.message
+				message: this.state.message,
+				createdOn: moment().format('MMMM Do YYYY, h:mm:ss a')
 			})
 			this.setState({ message: '' })
+		}
+		const gotoBottom = id => {
+			const el = document.getElementById(id)
+			el.scrollTop = el.scrollHeight - el.clientHeight
 		}
 	}
 	componentDidMount() {
@@ -77,6 +83,7 @@ export default class Chat extends React.Component {
 				</header>
 				<main>
 					<ul
+						id="chat"
 						style={{
 							overflowY: 'scroll',
 							minHeight: '300px',
@@ -94,11 +101,7 @@ export default class Chat extends React.Component {
 									<li key={index} style={{ margin: '0.8rem 0' }}>
 										{<span style={authorStyles}>{message.author[0]}</span>}
 										{<span style={msgStyles}>{message.message}</span>}
-										{
-											<span style={dateStyles}>
-												{moment().format('MMMM Do YYYY, h:mm:ss a')}
-											</span>
-										}
+										{<span style={dateStyles}>{message.createdOn}</span>}
 									</li>
 								) : (
 									<li
@@ -128,19 +131,16 @@ export default class Chat extends React.Component {
 												{message.author[0]}
 											</span>
 										}
-										{
-											<span style={dateStyles}>
-												{moment().format('MMMM Do YYYY, h:mm:ss a')}
-											</span>
-										}
+										{<span style={dateStyles}>{message.createdOn}</span>}
 									</li>
 								)
 						)}
 					</ul>
 					<footer>
 						<form onSubmit={e => e.preventDefault()}>
+							<div />
 							<input
-								style={{ padding: '0.5rem 0.5rem', width: '250px' }}
+								style={{ padding: '0.5rem 0.2rem', width: '249px' }}
 								type="text"
 								placeholder="message"
 								value={this.state.message}
