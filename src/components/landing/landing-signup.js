@@ -1,26 +1,35 @@
 import React from 'react'
 import { reduxForm, Field, SubmissionError, focus } from 'redux-form'
-// import { required, noEmpty, tooShort, isNumber } from './validators'
-// import { serverValidate } from './asyncValidator'
+import { required, noEmpty, tooShort, confirmPassword } from './validator'
 import TextInput from './input-text'
 import RaisedButton from 'material-ui/RaisedButton'
 import { registerUser } from '../../actions/auth'
-export const SignUp = ({
-	submitSucceeded,
-	error,
-	handleSubmit,
-	pristine,
-	submitting,
-	dispatch
-}) => {
+
+const matched = confirmPassword('password')
+export const SignUp = props => {
+	const {
+		submitSucceeded,
+		error,
+		handleSubmit,
+		pristine,
+		submitting,
+		dispatch
+	} = props
+
 	const submitMe = value => {
-		console.log(value)
-		dispatch(registerUser(value))
+		const { checkedPassword, ...newUser } = value
+		dispatch(registerUser(newUser)).catch(err => {
+			return Promise.reject(
+				new SubmissionError({
+					_error: 'Error submitting message'
+				})
+			)
+		})
 	}
 
 	let successMessage
 	if (submitSucceeded) {
-		successMessage = <div>Sign up Successful</div>
+		successMessage = <div>Log In Successful</div>
 	}
 	let errorMessage
 	if (error) {
@@ -30,32 +39,41 @@ export const SignUp = ({
 	return (
 		<div>
 			<form onSubmit={handleSubmit(value => submitMe(value))}>
-				<Field label="EMAIL" name="email" type="email" component={TextInput} />
 				<Field
-					label="FIRST NAME"
+					label="EMAIL"
+					name="email"
+					type="email"
+					component={TextInput}
+					validate={[required, noEmpty]}
+				/>
+				<Field
+					label="first name"
 					name="firstName"
 					type="text"
 					component={TextInput}
+					validate={[required, noEmpty]}
 				/>
 				<Field
-					label="LAST NAME"
+					label="last name"
 					name="lastName"
 					type="text"
 					component={TextInput}
+					validate={[required, noEmpty]}
 				/>
 				<Field
-					label="PASSWORD"
+					label="password"
 					name="password"
 					type="password"
 					component={TextInput}
+					validate={[required, noEmpty, tooShort]}
 				/>
 				<Field
-					label="CONFIRM PASSWORD"
-					name="confirmPassword"
+					label="confirm password"
+					name="checkedPassword"
 					type="password"
 					component={TextInput}
+					validate={[required, noEmpty, tooShort, matched]}
 				/>
-
 				<div>
 					<RaisedButton
 						label="Sign Up"

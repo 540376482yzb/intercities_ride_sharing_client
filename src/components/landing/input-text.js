@@ -9,7 +9,7 @@ export default function TextInput({ multiLine, input, label, meta, ...rest }) {
 				{...rest}
 				multiLine={multiLine}
 				floatingLabelText={label}
-				// errorText={meta.touched && meta.error}
+				errorText={meta.touched && meta.error}
 				autoComplete="off"
 				fullWidth={true}
 			/>

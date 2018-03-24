@@ -30,7 +30,7 @@ const storeAuthInfo = (authToken, dispatch) => {
 }
 export const authUser = user => dispatch => {
 	dispatch(authUserRequest())
-	fetch(`${API_BASE_URL}/auth/log-in`, {
+	return fetch(`${API_BASE_URL}/auth/log-in`, {
 		method: 'POST',
 		body: JSON.stringify(user),
 		headers: {
@@ -39,20 +39,18 @@ export const authUser = user => dispatch => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(({ authToken }) => storeAuthInfo(authToken, dispatch))
-		.catch(err => {
-			const { code } = err
-			const message =
-				code === 401
-					? 'Incorrect username or password'
-					: 'Unable to login, please try again'
-			dispatch(authUserError(err))
-			// return Promise.reject(
-			// 	new SubmissionError({
-			// 		_error: message
-			// 	})
-			// )
-		})
+		.then(
+			({ authToken }) => {
+				return storeAuthInfo(authToken, dispatch)
+			},
+			err => {
+				return Promise.reject(
+					new SubmissionError({
+						_error: 'Error submitting message'
+					})
+				)
+			}
+		)
 }
 
 export const refreshAuthToken = () => (dispatch, getState) => {
@@ -77,7 +75,7 @@ export const refreshAuthToken = () => (dispatch, getState) => {
 
 export const registerUser = user => dispatch => {
 	let password = user.password
-	fetch(`${API_BASE_URL}/user/sign-up`, {
+	return fetch(`${API_BASE_URL}/user/sign-up`, {
 		method: 'POST',
 		body: JSON.stringify(user),
 		headers: {
@@ -89,16 +87,6 @@ export const registerUser = user => dispatch => {
 		.then(res => {
 			console.log('user successfully register', res)
 			dispatch(authUser({ email: res.email, password }))
-		})
-		.catch(err => {
-			const { reason, message, location } = err
-			if (reason === 'ValidationError') {
-				return Promise.reject(
-					new SubmissionError({
-						[location]: message
-					})
-				)
-			}
 		})
 }
 
