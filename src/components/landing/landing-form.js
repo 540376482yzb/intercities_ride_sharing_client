@@ -29,7 +29,7 @@ export class TabForm extends React.Component {
 		const activeStyle = { backgroundColor: '#00BCD4', color: 'white' }
 		const inActiveStyle = { backgroundColor: '#E5E5E5', color: 'grey' }
 		return (
-			<div>
+			<div style={{ backgroundColor: 'white' }}>
 				<Tabs onChange={this.handleChange} value={this.state.slideIndex}>
 					<Tab
 						label="Sign Up"

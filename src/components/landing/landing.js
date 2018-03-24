@@ -7,7 +7,7 @@ import TabForm from './landing-form'
 import LandingHeader from './landing-header'
 export class Landing extends React.Component {
 	componentWillReceiveProps(nextProps) {
-		if (nextProps.authToken) {
+		if (!this.props.authToken && nextProps.authToken) {
 			this.props.history.push('/board')
 		}
 	}
