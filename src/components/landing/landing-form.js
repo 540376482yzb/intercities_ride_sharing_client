@@ -15,7 +15,14 @@ export class TabForm extends React.Component {
 		}
 	}
 	componentWillReceiveProps(nextProps) {
-		if (!this.props.currentUser && nextProps.currentUser) {
+		if (!this.props.authToken && nextProps.authToken) {
+			this.props.history.push('/board')
+		}
+	}
+	componentDidMount() {
+		console.log('component did mount')
+		if (this.props.authToken) {
+			console.log('redirecting')
 			this.props.history.push('/board')
 		}
 	}
@@ -60,7 +67,7 @@ export class TabForm extends React.Component {
 
 const mapStateToProps = state => {
 	return {
-		currentUser: state.auth.currentUser
+		authToken: state.auth.authToken
 	}
 }
 

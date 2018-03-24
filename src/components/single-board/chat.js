@@ -46,7 +46,7 @@ export default class Chat extends React.Component {
 		}
 
 		//set up io
-		this.socket = io('https://ride-share-server.herokuapp.com')
+		this.socket = io('localhost:8080')
 		this.socket.on('RECEIVE_MESSAGE', function(data) {
 			addMessage(data)
 		})

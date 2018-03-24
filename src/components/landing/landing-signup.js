@@ -20,7 +20,7 @@ export const SignUp = ({
 
 	let successMessage
 	if (submitSucceeded) {
-		successMessage = <div>Complaint successfully submitted</div>
+		successMessage = <div>Sign up Successful</div>
 	}
 	let errorMessage
 	if (error) {

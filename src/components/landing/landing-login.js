@@ -21,7 +21,7 @@ export const LogIn = ({
 
 	let successMessage
 	if (submitSucceeded) {
-		successMessage = <div>Complaint successfully submitted</div>
+		successMessage = <div>Log In Successful</div>
 	}
 	let errorMessage
 	if (error) {
