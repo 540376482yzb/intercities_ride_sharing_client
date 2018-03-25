@@ -7,24 +7,11 @@ import { registerUser } from '../../actions/auth'
 
 const matched = confirmPassword('password')
 export const SignUp = props => {
-	const {
-		submitSucceeded,
-		error,
-		handleSubmit,
-		pristine,
-		submitting,
-		dispatch
-	} = props
+	const { submitSucceeded, error, handleSubmit, pristine, submitting, dispatch } = props
 
 	const submitMe = value => {
 		const { checkedPassword, ...newUser } = value
-		dispatch(registerUser(newUser)).catch(err => {
-			return Promise.reject(
-				new SubmissionError({
-					_error: 'Error submitting message'
-				})
-			)
-		})
+		return dispatch(registerUser(newUser))
 	}
 
 	let successMessage
@@ -39,27 +26,9 @@ export const SignUp = props => {
 	return (
 		<div>
 			<form onSubmit={handleSubmit(value => submitMe(value))}>
-				<Field
-					label="EMAIL"
-					name="email"
-					type="email"
-					component={TextInput}
-					validate={[required, noEmpty]}
-				/>
-				<Field
-					label="first name"
-					name="firstName"
-					type="text"
-					component={TextInput}
-					validate={[required, noEmpty]}
-				/>
-				<Field
-					label="last name"
-					name="lastName"
-					type="text"
-					component={TextInput}
-					validate={[required, noEmpty]}
-				/>
+				<Field label="EMAIL" name="email" type="email" component={TextInput} validate={[required, noEmpty]} />
+				<Field label="first name" name="firstName" type="text" component={TextInput} validate={[required, noEmpty]} />
+				<Field label="last name" name="lastName" type="text" component={TextInput} validate={[required, noEmpty]} />
 				<Field
 					label="password"
 					name="password"

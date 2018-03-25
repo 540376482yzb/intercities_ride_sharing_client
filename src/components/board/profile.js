@@ -15,17 +15,13 @@ export class Profile extends React.Component {
 	}
 	render() {
 		if (!this.props.currentUser && !this.props.rides) return <div />
-		const myRide = this.props.rides.find(
-			ride => ride.driver.id === this.props.currentUser.id
-		)
+		const myRide = this.props.rides.find(ride => ride.driver.id === this.props.currentUser.id)
 		const hasMatch = this.props.currentUser.match
 		const editBtnRender = myRide ? (
 			<MenuItem
-				primaryText="Edit My Ride"
+				primaryText="Edit my trip"
 				disabled={hasMatch ? true : false}
-				onClick={() =>
-					this.props.history.push(`/single-board/${myRide.id}/edit`)
-				}
+				onClick={() => this.props.history.push(`/single-board/${myRide.id}/edit`)}
 			/>
 		) : (
 			undefined
@@ -33,10 +29,10 @@ export class Profile extends React.Component {
 		const deleteBtnRender = myRide ? (
 			<MenuItem
 				className="deleteBtn"
-				primaryText="Delete My Ride"
+				primaryText="Delete my trip"
 				disabled={hasMatch ? true : false}
 				onClick={() => {
-					this.props.onAction('You Ride is Deleted')
+					this.props.onAction('You Trip is Deleted')
 					this.props.dispatch(deleteRide(myRide.id, this.props.currentUser.id))
 				}}
 			/>
@@ -48,9 +44,7 @@ export class Profile extends React.Component {
 			numberRequests !== 0 ? (
 				<MenuItem
 					primaryText={`Pending Requests: ${numberRequests}`}
-					onClick={() =>
-						this.props.history.push(`/single-board/${myRide.id}/requests`)
-					}
+					onClick={() => this.props.history.push(`/single-board/${myRide.id}/requests`)}
 					disabled={hasMatch ? true : false}
 				/>
 			) : (
@@ -60,9 +54,7 @@ export class Profile extends React.Component {
 		const matchBtnRender = matchRoomId ? (
 			<MenuItem
 				primaryText="Match Room"
-				onClick={() =>
-					this.props.history.push(`/single-board/${matchRoomId}/match`)
-				}
+				onClick={() => this.props.history.push(`/single-board/${matchRoomId}/match`)}
 			/>
 		) : (
 			undefined

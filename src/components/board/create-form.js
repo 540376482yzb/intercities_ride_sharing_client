@@ -50,7 +50,8 @@ class CreateForm extends React.Component {
 			maxCost: 100,
 			startLoc: '',
 			arriveLoc: '',
-			scheduleDate: new Date()
+			scheduleDate: new Date(),
+			disClaimer: ''
 		}
 		this.startLocOnChange = value => this.setState({ startLoc: value })
 		this.arriveLocOnChange = value => this.setState({ arriveLoc: value })
@@ -74,7 +75,8 @@ class CreateForm extends React.Component {
 			...simpleForm,
 			scheduleDate,
 			rideCost,
-			driver: this.props.driver
+			driver: this.props.driver,
+			disClaimer: this.state.disClaimer
 		})
 	}
 	handleHost(submitForm) {
@@ -120,9 +122,7 @@ class CreateForm extends React.Component {
 				</label>
 				<DatePicker
 					value={
-						typeof this.state.scheduleDate === 'string'
-							? new Date(this.state.scheduleDate)
-							: this.state.scheduleDate
+						typeof this.state.scheduleDate === 'string' ? new Date(this.state.scheduleDate) : this.state.scheduleDate
 					}
 					floatingLabelText="Date"
 					id="date"
@@ -166,10 +166,7 @@ class CreateForm extends React.Component {
 			</div>
 		)
 		return (
-			<form
-				onSubmit={e => this.handleSubmit(e)}
-				style={{ paddingBottom: '2rem' }}
-			>
+			<form onSubmit={e => this.handleSubmit(e)} style={{ paddingBottom: '2rem' }}>
 				<label style={labelStyles} htmlFor="startLocation">
 					{startLabel}
 				</label>

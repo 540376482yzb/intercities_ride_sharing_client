@@ -84,10 +84,18 @@ export const registerUser = user => dispatch => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(res => {
-			console.log('user successfully register', res)
-			dispatch(authUser({ email: res.email, password }))
-		})
+		.then(
+			res => {
+				return dispatch(authUser({ email: res.email, password }))
+			},
+			err => {
+				return Promise.reject(
+					new SubmissionError({
+						_error: 'Error submitting message'
+					})
+				)
+			}
+		)
 }
 
 export const FETCH_USER_SUCCESS = 'FETCH_USER_SUCCESS'

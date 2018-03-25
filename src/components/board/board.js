@@ -5,12 +5,7 @@ import '../landing/landing-header.css'
 import './board.css'
 import HostForm from './host-form.js'
 import { connect } from 'react-redux'
-import {
-	fetchRides,
-	clearSearch,
-	askForRide,
-	deleteRideSuccess
-} from '../../actions/rides'
+import { fetchRides, clearSearch, askForRide, deleteRideSuccess } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
 import RaisedButton from 'material-ui/RaisedButton'
 import requiresLogin from '../hoc/requireLogin'
@@ -21,7 +16,8 @@ import Drawer from 'material-ui/Drawer'
 import Profile from './profile'
 import jwtDecode from 'jwt-decode'
 import CardInfo from './card-info'
-
+import { initializeSocket } from '../../actions/socket'
+import io from 'socket.io-client'
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)
@@ -30,19 +26,23 @@ export class Board extends React.Component {
 			snackBar: false,
 			message: ''
 		}
+
 		this.fireNotification = message =>
 			new Promise((resolve, reject) => {
 				return resolve(message)
 			})
 	}
 	componentDidMount() {
+		const socket = io('localhost:8080')
+		if (!this.props.hasSocket) {
+			this.props.dispatch(initializeSocket())
+		}
 		this.getNewData()
 	}
 	componentWillReceiveProps(nextProps) {
 		if (
 			(!this.props.deletingRide && nextProps.deletingRide) ||
-			(this.props.currentUser &&
-				this.props.currentUser.match !== nextProps.currentUser.match)
+			(this.props.currentUser && this.props.currentUser.match !== nextProps.currentUser.match)
 		) {
 			console.log('match')
 			this.getNewData()
@@ -77,9 +77,7 @@ export class Board extends React.Component {
 			const isHost = this.props.currentUser.host
 			const ridesWithNoMatch = rides.filter(ride => ride.match.length === 0)
 			renderComponents = ridesWithNoMatch.map((ride, index) => {
-				const requested = this.props.currentUser.sentRequests.find(
-					request => request === ride.id
-				)
+				const requested = this.props.currentUser.sentRequests.find(request => request === ride.id)
 				if (ride.match.length === 0) {
 				}
 				return (
@@ -113,10 +111,7 @@ export class Board extends React.Component {
 						alignItems: 'center'
 					}}
 				>
-					<RaisedButton
-						label="Clear Search"
-						onClick={() => this.props.dispatch(clearSearch())}
-					/>
+					<RaisedButton label="Clear Search" onClick={() => this.props.dispatch(clearSearch())} />
 				</div>
 			)
 		}
@@ -149,12 +144,7 @@ export class Board extends React.Component {
 				{renderClearSearch}
 				<ul className="entry-list-container">{renderComponents}</ul>
 
-				<Drawer
-					docked={false}
-					width={350}
-					open={this.state.open}
-					onRequestChange={open => this.setState({ open })}
-				>
+				<Drawer docked={false} width={350} open={this.state.open} onRequestChange={open => this.setState({ open })}>
 					<header className="header-container">
 						<div className="board-logo">
 							<LandingHeader filter={true} opacityValue={1} height={4} />
@@ -181,7 +171,8 @@ const mapStateToProps = state => {
 		filteredRides: state.rideReducer.filteredRides,
 		currentUser: state.auth.currentUser,
 		authToken: state.auth.authToken,
-		deletingRide: state.rideReducer.deletingRide
+		deletingRide: state.rideReducer.deletingRide,
+		hasSocket: !!state.socket.socket
 	}
 }
 
