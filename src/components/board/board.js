@@ -21,6 +21,7 @@ import Drawer from 'material-ui/Drawer'
 import Profile from './profile'
 import jwtDecode from 'jwt-decode'
 import CardInfo from './card-info'
+
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)
@@ -38,7 +39,12 @@ export class Board extends React.Component {
 		this.getNewData()
 	}
 	componentWillReceiveProps(nextProps) {
-		if (!this.props.deletingRide && nextProps.deletingRide) {
+		if (
+			(!this.props.deletingRide && nextProps.deletingRide) ||
+			(this.props.currentUser &&
+				this.props.currentUser.match !== nextProps.currentUser.match)
+		) {
+			console.log('match')
 			this.getNewData()
 		}
 	}

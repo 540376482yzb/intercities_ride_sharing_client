@@ -85,7 +85,7 @@ export class Match extends React.Component {
 			)
 		}
 		const renderChatRoom = this.props.currentUser ? (
-			<Chat currentUserName={this.props.currentUser.firstName} />
+			<Chat currentUser={this.props.currentUser} roomId={this.rideId} />
 		) : (
 			undefined
 		)

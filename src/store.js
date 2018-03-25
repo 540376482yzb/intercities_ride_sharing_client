@@ -7,20 +7,26 @@ import authReducer from './reducers/auth'
 import locationReducer from './reducers/location'
 import { setAuthToken, refreshAuthToken } from './actions/auth'
 import { loadAuthToken } from './local-storage'
+import socketReducer from './reducers/socket'
+import io from 'socket.io-client'
+import { initializeSocket } from './actions/socket'
 export const store = createStore(
 	combineReducers({
 		rideReducer,
 		locationReducer,
 		form: formReducer,
-		auth: authReducer
+		auth: authReducer,
+		socket: socketReducer
 	}),
 	composeWithDevTools(applyMiddleware(thunk))
 )
 
+const socket = io('localhost:8080')
 //persist autoToken into local storage
 const authToken = loadAuthToken()
 if (authToken) {
 	store.dispatch(setAuthToken(authToken))
 	store.dispatch(refreshAuthToken())
+	store.dispatch(initializeSocket(socket))
 }
 export default store
