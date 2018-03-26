@@ -33,7 +33,7 @@ export class Board extends React.Component {
 			})
 	}
 	componentDidMount() {
-		const socket = io('localhost:8080')
+		const socket = io('https://ride-share-server.herokuapp.com')
 		if (!this.props.hasSocket) {
 			this.props.dispatch(initializeSocket())
 		}
