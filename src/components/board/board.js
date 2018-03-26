@@ -70,8 +70,12 @@ export class Board extends React.Component {
 	}
 
 	render() {
-		let renderComponents = <div />
-		if (!this.props.currentUser) return renderComponents
+		let renderComponents = (
+			<div className="overlay">
+				<div className="loader" />
+			</div>
+		)
+		if (!this.props.currentUser && !this.props.rides) return renderComponents
 		const rides = this.props.filteredRides || this.props.rides
 		if (rides) {
 			const isHost = this.props.currentUser.host
@@ -172,7 +176,8 @@ const mapStateToProps = state => {
 		currentUser: state.auth.currentUser,
 		authToken: state.auth.authToken,
 		deletingRide: state.rideReducer.deletingRide,
-		hasSocket: !!state.socket.socket
+		hasSocket: !!state.socket.socket,
+		isLoading: state.rideReducer.loading
 	}
 }
 

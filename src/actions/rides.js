@@ -39,7 +39,11 @@ export const fetchRides = () => (dispatch, getState) => {
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
 		.then(
-			rides => dispatch(fetchRidesSuccess(rides)),
+			rides => {
+				setTimeout(() => {
+					dispatch(fetchRidesSuccess(rides))
+				}, 1000)
+			},
 			err => dispatch(fetchRidesError(err))
 		)
 }
@@ -76,10 +80,7 @@ export const addRide = ride => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(
-			rides => dispatch(addRideSuccess()),
-			err => dispatch(addRideError(err))
-		)
+		.then(rides => dispatch(addRideSuccess()), err => dispatch(addRideError(err)))
 }
 
 export const ASK_FOR_RIDE_ERROR = 'ASK_FOR_RIDE_ERROR'
@@ -105,10 +106,7 @@ export const askForRide = (rideId, userId) => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(
-			res => dispatch(askForRideSuccess(res.content.ride.id)),
-			err => dispatch(askForRideError(err))
-		)
+		.then(res => dispatch(askForRideSuccess(res.content.ride.id)), err => dispatch(askForRideError(err)))
 }
 
 export const ACCEPT_RIDE_ERROR = 'ACCEPT_RIDE_ERROR'
@@ -117,10 +115,7 @@ export const acceptRideError = error => ({
 	error
 })
 
-export const acceptRide = (driverId, passengerId, rideId) => (
-	dispatch,
-	getState
-) => {
+export const acceptRide = (driverId, passengerId, rideId) => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
 	return fetch(`${API_BASE_URL}/board/match/${rideId}`, {
 		method: 'PUT',
@@ -157,10 +152,7 @@ export const fetchRide = rideId => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(
-			ride => dispatch(fetchRideSuccess(ride)),
-			err => dispatch(fetchRideError(err))
-		)
+		.then(ride => dispatch(fetchRideSuccess(ride)), err => dispatch(fetchRideError(err)))
 }
 
 export const DELETE_REQUESTS_ERROR = 'DELETE_REQUESTS_ERROR'
@@ -252,9 +244,7 @@ export const cancelMatch = matchedRide => (dispatch, getState) => {
 		.then(res => res.json())
 		.then(
 			res => {
-				return dispatch(
-					cancelMatchSuccess(matchedRide.id, driverId, passengerId)
-				)
+				return dispatch(cancelMatchSuccess(matchedRide.id, driverId, passengerId))
 			},
 			err => {
 				return dispatch(cancelMatchError(err))

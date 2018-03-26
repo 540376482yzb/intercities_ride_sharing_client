@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom'
 
 export default () => Component => {
 	function RequiresLogin(props) {
-		const { authenticating, loggedIn, error, ...passThroughProps } = props
+		const { authenticating, loggedIn, error, loading, ...passThroughProps } = props
 		if (authenticating) {
 			return <div>Logging in...</div>
 		} else if (!loggedIn) {

@@ -21,7 +21,7 @@ export const store = createStore(
 	composeWithDevTools(applyMiddleware(thunk))
 )
 
-const socket = io('localhost:8080')
+const socket = io('https://ride-share-server.herokuapp.com/')
 //persist autoToken into local storage
 const authToken = loadAuthToken()
 if (authToken) {
