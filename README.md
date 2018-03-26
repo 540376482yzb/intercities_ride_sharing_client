@@ -48,7 +48,7 @@
  ## Screen shots of this app
  
  ### Landing page
- [Imgur](https://i.imgur.com/uUqtFN4.png?1)
+ [img]https://i.imgur.com/uUqtFN4.png?1[/img]
  
  ### Registration / LogIn
  [Imgur](https://i.imgur.com/XLHZ3om.png)
