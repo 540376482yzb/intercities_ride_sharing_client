@@ -5,8 +5,21 @@ import { connect } from 'react-redux'
 import Intro from './landing-intro'
 import TabForm from './landing-form'
 import LandingHeader from './landing-header'
+import Loader from '../loader'
 export class Landing extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			loading: true
+		}
+	}
+	componentDidMount() {
+		setTimeout(() => {
+			this.setState({ loading: false })
+		}, 1000)
+	}
 	render() {
+		if (this.state.loading) return <Loader />
 		return (
 			<div className="landing">
 				<LandingHeader height={6} />

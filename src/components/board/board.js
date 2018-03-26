@@ -18,6 +18,7 @@ import jwtDecode from 'jwt-decode'
 import CardInfo from './card-info'
 import { initializeSocket } from '../../actions/socket'
 import io from 'socket.io-client'
+import Loader from '../loader'
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)
@@ -70,11 +71,7 @@ export class Board extends React.Component {
 	}
 
 	render() {
-		let renderComponents = (
-			<div className="overlay">
-				<div className="loader" />
-			</div>
-		)
+		let renderComponents = <Loader />
 		if (!this.props.currentUser && !this.props.rides) return renderComponents
 		const rides = this.props.filteredRides || this.props.rides
 		if (rides) {
