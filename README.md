@@ -63,9 +63,10 @@
  ![Imgur](https://i.imgur.com/I6SU4IWl.png)
  
  ##### Share Ride predicts the location you have type and auto-complete for you
-<a href="https://imgur.com/aKmEk8q"><img src="https://i.imgur.com/aKmEk8ql.gif" title="source: imgur.com" /></a>
+![Imgur](https://i.imgur.com/3p6nteYl.png)
  
  ##### Match room appears when a host accept a request from our user. It allows instant real-time communication
+![gif](https://media.giphy.com/media/QfsvYoBSSpfbtFJIVo/giphy.gif)
  
  
  ## How does this app work
