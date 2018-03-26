@@ -66,8 +66,7 @@
 ![Imgur](https://i.imgur.com/3p6nteYl.png)
  
  ##### Match room appears when a host accept a request from our user. It allows instant real-time communication
-![gif](https://media.giphy.com/media/QfsvYoBSSpfbtFJIVo/giphy.gif)
- 
+ !<img src="https://media.giphy.com/media/cZaFIdwLsljOHFy1CK/giphy.gif" width="450px" />
  
  ## How does this app work
    ### After Sign up / Log in
