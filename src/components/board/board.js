@@ -1,22 +1,19 @@
 import React from 'react'
-import DrawerList from './drawer-list'
-import LandingHeader from '../landing/landing-header'
 import '../landing/landing-header.css'
 import './board.css'
 import HostForm from './host-form.js'
 import { connect } from 'react-redux'
 import { fetchRides, clearSearch, askForRide, deleteRideSuccess } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
-import { searchOpen, searchClose } from '../../actions/utils'
-
 import requiresLogin from '../hoc/requireLogin'
-
 import Profile from './profile'
 import CardInfo from './card-info'
 import { initializeSocket } from '../../actions/socket'
 import io from 'socket.io-client'
 import Loader from '../loader'
 import BoardHead from './BoardHead'
+import Overlay from './Overlay'
+import SearchForm from './search-form'
 export class Board extends React.Component {
 	componentDidMount() {
 		const socket = io('https://ride-share-server.herokuapp.com')
@@ -35,7 +32,7 @@ export class Board extends React.Component {
 	}
 
 	render() {
-		const { rides, currentUser } = this.props
+		const { rides, currentUser, isSearchOpen } = this.props
 		if (!rides) {
 			return <Loader />
 		}
@@ -75,28 +72,19 @@ export class Board extends React.Component {
 		return (
 			<main className="board-container">
 				<BoardHead />
-				{/* <AppBar
-					style={{ backgroundColor: '#FFA726' }}
-					title={`Hello, ${this.props.currentUser.firstName}`}
-					onLeftIconButtonClick={() => this.openDrawer()}
-					iconElementRight={
-						!this.props.rides ? (
-							<div />
-						) : (
-							<Profile
-								onAction={msg => {
-									this.fireNotification(msg)
-										.then(message => this.setState({ message }))
-										.then(() => this.snackBarOpen())
-								}}
-							/>
-						)
-					}
-				/> */}
-				{renderClearSearch}
+
+				{isSearchOpen ? (
+					<Overlay>
+						<SearchForm />
+					</Overlay>
+				) : (
+					''
+				)}
+
+				{/* {renderClearSearch} */}
 				<ul className="entry-list-container">{renderComponents}</ul>
 
-				<Drawer
+				{/* <Drawer
 					docked={false}
 					width={350}
 					open={this.state.open}
@@ -116,7 +104,7 @@ export class Board extends React.Component {
 					</header>
 					<DrawerList onClick={() => console.log('close')} />
 				</Drawer>
-				<HostForm />
+				<HostForm /> */}
 			</main>
 		)
 	}
@@ -128,7 +116,8 @@ const mapStateToProps = state => {
 		filteredRides: state.rideReducer.filteredRides,
 		currentUser: state.auth.currentUser,
 		authToken: state.auth.authToken,
-		hasSocket: !!state.socket.socket
+		hasSocket: !!state.socket.socket,
+		isSearchOpen: state.control.searchOpen
 	}
 }
 

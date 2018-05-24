@@ -11,20 +11,22 @@ import { addRide } from '../../actions/rides'
 import { editRide } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
 import { Button } from '../utilities'
+import { searchClose } from '../../actions/utils'
 
 const labelStyles = {
 	display: 'block',
-	fontWeight: '400',
-	padding: '1rem 0'
+	fontWeight: 'bold',
+	padding: '1rem 0',
+	color: 'rgba(0, 0, 0, 0.6)'
 }
 const inputStyles = {
 	input: {
-		width: '90%',
+		width: '100%',
 		border: 0,
 		borderBottom: '2px solid #00BCD4'
 	},
 	autocompleteContainer: {
-		width: '95%',
+		width: '100%',
 		zIndex: '1050'
 	}
 	// autocompleteItem: {
@@ -89,10 +91,10 @@ class SearchForm extends React.Component {
 		})
 		this.props.dispatch(narrowSearch(results))
 		this.setState(this.initialState)
+		this.props.dispatch(searchClose())
 	}
 
 	render() {
-		const { startLabel, arriveLabel, costLabel, dateLabel } = this.props
 		const startLoc = {
 			name: 'startLocation',
 			type: 'text',
@@ -119,7 +121,7 @@ class SearchForm extends React.Component {
 		return (
 			<form onSubmit={e => this.handleSubmit(e)} style={{ paddingBottom: '2rem' }}>
 				<label style={labelStyles} htmlFor="startLocation">
-					{startLabel}
+					Origination
 				</label>
 				<PlacesAutocomplete
 					id="startLocation"
@@ -130,7 +132,7 @@ class SearchForm extends React.Component {
 				/>
 				<br />
 				<label style={labelStyles} htmlFor="arriveLocation">
-					{arriveLabel}
+					Destination
 				</label>
 				<PlacesAutocomplete
 					id="arriveLocation"
@@ -141,7 +143,7 @@ class SearchForm extends React.Component {
 				/>
 				<br />
 				<label style={labelStyles} htmlFor="maxCost">
-					{costLabel}
+					Acceptable cost
 				</label>
 				<div>
 					<strong>Cost: $ </strong>
@@ -155,7 +157,7 @@ class SearchForm extends React.Component {
 					name="maxCost"
 					value={this.state.maxCost}
 					onChange={this.handleSlider}
-					style={{ width: '95%' }}
+					style={{ width: '100%' }}
 				/>
 				{renderSearchBtn}
 			</form>

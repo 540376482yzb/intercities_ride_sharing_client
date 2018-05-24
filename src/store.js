@@ -8,6 +8,7 @@ import locationReducer from './reducers/location'
 import { setAuthToken, refreshAuthToken } from './actions/auth'
 import { loadAuthToken } from './local-storage'
 import socketReducer from './reducers/socket'
+import control from './reducers/control'
 import io from 'socket.io-client'
 import { initializeSocket } from './actions/socket'
 export const store = createStore(
@@ -16,7 +17,8 @@ export const store = createStore(
 		locationReducer,
 		form: formReducer,
 		auth: authReducer,
-		socket: socketReducer
+		socket: socketReducer,
+		control
 	}),
 	composeWithDevTools(applyMiddleware(thunk))
 )

@@ -1,6 +1,11 @@
 .button-blue {
 	background-color: #29b4d6;
 }
+
+.button-white {
+	background-color: white;
+	color: rgba(0, 0, 0, 0.788) !important;
+}
 .button-btn {
 	padding: 8px 16px;
 	box-shadow: 0 2px 4px 0 rgba(16, 36, 94, 0.2);

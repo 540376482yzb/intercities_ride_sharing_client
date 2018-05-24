@@ -1,12 +1,32 @@
 .overlay-container {
-	position: relative;
+	position: fixed;
 	background-color: rgba(0, 0, 0, 0.295);
-}
-
-.overlay-message {
-	min-width: 320px;
-	position: absolute;
 	top: 0;
 	bottom: 0;
 	left: 0;
+	right: 0;
+	z-index: 1000;
+}
+
+.overlay-message {
+	background-color: white;
+	padding: 50px 20px 20px 20px;
+	min-width: 320px;
+	position: fixed;
+	top: 0;
+
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 1001;
+}
+
+.overlay-nav {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 10px;
+	z-index: 0;
+	box-shadow: 0 2px 4px 0 rgba(16, 36, 94, 0.2);
 }
