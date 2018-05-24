@@ -1,6 +1,6 @@
 import React from 'react'
 import './landing-intro.css'
-import RaisedButton from 'material-ui/RaisedButton'
+import { Button } from '../utilities'
 import { withRouter } from 'react-router-dom'
 export class Intro extends React.Component {
 	render() {
@@ -10,13 +10,11 @@ export class Intro extends React.Component {
 					<p>In a Journey of Joys, Surprises and Companionship</p>
 				</div>
 				<div className="landing-btn-container">
-					<RaisedButton
-						label="JOIN US"
-						primary={true}
-						labelStyle={{ fontSize: '1rem' }}
+					<Button
+						label="Join us"
+						color="blue"
 						onClick={() => {
-							console.log('click')
-							this.props.history.push('/landing/secure')
+							this.props.history.push('/landing/login')
 						}}
 					/>
 				</div>
@@ -24,4 +22,5 @@ export class Intro extends React.Component {
 		)
 	}
 }
+
 export default withRouter(Intro)

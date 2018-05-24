@@ -12,6 +12,8 @@ import {
 	CANCEL_MATCH_ERROR,
 	CANCEL_MATCH_SUCCESS
 } from '../actions/rides'
+
+import Decoder from 'jwt-decode'
 const initialState = {
 	loading: false,
 	error: null,
@@ -34,7 +36,8 @@ export default function authReducer(state = initialState, action) {
 		newState = {
 			...state,
 			loading: false,
-			authToken: action.authToken
+			authToken: action.authToken,
+			currentUser: Decoder(action.authToken).user
 		}
 		return newState
 	}

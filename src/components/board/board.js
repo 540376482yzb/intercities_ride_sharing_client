@@ -9,16 +9,14 @@ import { fetchRides, clearSearch, askForRide, deleteRideSuccess } from '../../ac
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
 import RaisedButton from 'material-ui/RaisedButton'
 import requiresLogin from '../hoc/requireLogin'
-import Snackbar from 'material-ui/Snackbar'
-import AppBar from 'material-ui/AppBar'
 import FlatButton from 'material-ui/FlatButton'
 import Drawer from 'material-ui/Drawer'
 import Profile from './profile'
-import jwtDecode from 'jwt-decode'
 import CardInfo from './card-info'
 import { initializeSocket } from '../../actions/socket'
 import io from 'socket.io-client'
 import Loader from '../loader'
+import BoardHead from './BoardHead'
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)
@@ -38,25 +36,11 @@ export class Board extends React.Component {
 		if (!this.props.hasSocket) {
 			this.props.dispatch(initializeSocket())
 		}
-		this.getNewData()
+		this.props.dispatch(fetchRides())
 	}
-	componentWillReceiveProps(nextProps) {
-		if (
-			(!this.props.deletingRide && nextProps.deletingRide) ||
-			(this.props.currentUser && this.props.currentUser.match !== nextProps.currentUser.match)
-		) {
-			console.log('match')
-			this.getNewData()
-		}
-	}
+
 	openDrawer = () => this.setState({ open: true })
 	closeDrawer = () => this.setState({ open: false })
-
-	getNewData() {
-		this.props.dispatch(fetchUser(jwtDecode(this.props.authToken).user.id))
-		this.props.dispatch(fetchRides())
-		this.props.dispatch(deleteRideSuccess())
-	}
 
 	fireRequest(e) {
 		const rideId = e.currentTarget.closest('li').id
@@ -71,35 +55,29 @@ export class Board extends React.Component {
 	}
 
 	render() {
-		let renderComponents = <Loader />
-		if (!this.props.currentUser && !this.props.rides) return renderComponents
-		const rides = this.props.filteredRides || this.props.rides
-		if (rides) {
-			const isHost = this.props.currentUser.host
-			const ridesWithNoMatch = rides.filter(ride => ride.match.length === 0)
-			renderComponents = ridesWithNoMatch.map((ride, index) => {
-				const requested = this.props.currentUser.sentRequests.find(request => request === ride.id)
-				if (ride.match.length === 0) {
-				}
-				return (
-					<li key={index} id={ride.id} className="entry-list">
-						<CardInfo
-							isHost={isHost}
-							requested={requested}
-							ride={ride}
-							onClick={e => {
-								this.fireRequest(e)
-								this.fireNotification('request has been sent')
-									.then(msg => this.setState({ message: msg }))
-									.then(() => {
-										this.snackBarOpen()
-									})
-							}}
-						/>
-					</li>
-				)
-			})
+		const { rides, currentUser } = this.props
+		if (!rides) {
+			return <Loader />
 		}
+		const isHost = currentUser.host
+		const ridesWithNoMatch = rides.filter(ride => ride.match.length === 0)
+		let renderComponents = ridesWithNoMatch.map((ride, index) => {
+			const requested = currentUser.sentRequests.find(request => request === ride.id)
+			const isDriver = currentUser.id === ride.driver.id
+			return (
+				<li key={index} id={ride.id} className="entry-list">
+					<CardInfo
+						isHost={isHost}
+						requested={requested}
+						ride={ride}
+						isDriver={isDriver}
+						onClick={e => {
+							this.fireRequest(e)
+						}}
+					/>
+				</li>
+			)
+		})
 		let renderClearSearch = ''
 		if (this.props.filteredRides) {
 			renderClearSearch = (
@@ -118,13 +96,8 @@ export class Board extends React.Component {
 		}
 		return (
 			<main className="board-container">
-				<Snackbar
-					open={this.state.snackBar}
-					message={this.state.message}
-					autoHideDuration={3000}
-					onRequestClose={() => this.snackBarClose()}
-				/>
-				<AppBar
+				<BoardHead />
+				{/* <AppBar
 					style={{ backgroundColor: '#FFA726' }}
 					title={`Hello, ${this.props.currentUser.firstName}`}
 					onLeftIconButtonClick={() => this.openDrawer()}
@@ -141,11 +114,16 @@ export class Board extends React.Component {
 							/>
 						)
 					}
-				/>
+				/> */}
 				{renderClearSearch}
 				<ul className="entry-list-container">{renderComponents}</ul>
 
-				<Drawer docked={false} width={350} open={this.state.open} onRequestChange={open => this.setState({ open })}>
+				<Drawer
+					docked={false}
+					width={350}
+					open={this.state.open}
+					onRequestChange={open => this.setState({ open })}
+				>
 					<header className="header-container">
 						<div className="board-logo">
 							<LandingHeader filter={true} opacityValue={1} height={4} />
@@ -158,7 +136,7 @@ export class Board extends React.Component {
 							/>
 						</div>
 					</header>
-					<DrawerList onClick={() => this.closeDrawer()} />
+					<DrawerList onClick={() => console.log('close')} />
 				</Drawer>
 				<HostForm />
 			</main>
@@ -172,9 +150,7 @@ const mapStateToProps = state => {
 		filteredRides: state.rideReducer.filteredRides,
 		currentUser: state.auth.currentUser,
 		authToken: state.auth.authToken,
-		deletingRide: state.rideReducer.deletingRide,
-		hasSocket: !!state.socket.socket,
-		isLoading: state.rideReducer.loading
+		hasSocket: !!state.socket.socket
 	}
 }
 

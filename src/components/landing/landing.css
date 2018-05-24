@@ -1,26 +1,25 @@
-.landing {
+.landing-content {
+	text-align: center;
+	margin: 0 auto;
 	display: flex;
 	flex-direction: column;
 	width: 100vw;
-	height: 100vh;
+	padding-bottom: 100px;
 	background: url("/images/background-1.jpeg") no-repeat center center fixed;
 	background-size: cover;
 }
-
-.landing-content {
-	width: 90%;
-	text-align: center;
-	margin: 0 auto;
-}
 .landing-swap {
+	width: 90%;
 	margin: 0 auto;
 }
-@media screen and (min-width: 642px) {
-	/* .landing {
-		width: 680px;
-		margin: 0 auto;
-	} */
+
+@media screen and (min-width: 500px) {
 	.landing-swap {
-		width: 600px;
+		width: 80%;
+	}
+}
+@media screen and (min-width: 700px) {
+	.landing-swap {
+		width: 60%;
 	}
 }

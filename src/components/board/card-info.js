@@ -2,62 +2,25 @@
 import React from 'react'
 import './card-info.css'
 import * as moment from 'moment'
+import ArrowDown from 'react-icons/lib/io/ios-arrow-thin-down'
+import { Button } from '../utilities'
 export default class CardInfo extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			expand: false
-		}
-	}
-
 	render() {
 		const { ride, requested, isHost } = this.props
 		const userName = `${ride.driver.firstName} ${ride.driver.lastName}`
-		const expandable = (
-			<div
-				className="expandable-container"
-				style={this.state.expand ? { display: 'block' } : { display: 'none' }}
-			>
+		const render = (
+			<section>
+				{/* expand button - show more content */}
 				<CardContent
 					ride={ride}
 					requested={requested}
 					isHost={isHost}
 					onClick={e => this.props.onClick(e)}
 				/>
-
-				{/* collapse button - hide content */}
-				<button
-					className="control-btn"
-					onClick={() => this.setState({ expand: false })}
-				>
-					<img
-						className="control-btn-icon"
-						src="/images/double-up.svg"
-						alt="collapse"
-					/>
-				</button>
-			</div>
-		)
-		const render = (
-			<section>
-				{/* expand button - show more content */}
-				<button
-					className="control-btn"
-					style={this.state.expand ? { display: 'none' } : { display: 'block' }}
-					onClick={() => this.setState({ expand: true })}
-				>
-					<img
-						src="/images/double-down.svg"
-						alt="down-arrow"
-						className="control-btn-icon"
-					/>
-				</button>
-
-				{expandable}
 			</section>
 		)
 		return (
-			<div>
+			<div className="card-info-container">
 				<CardUserInfo
 					user1={{
 						userName,
@@ -65,10 +28,8 @@ export default class CardInfo extends React.Component {
 						avatar: '/images/man.svg'
 					}}
 				/>
-				<hr className="style-two" />
 				<main className="content-container">
 					<CardJourney ride={ride} />
-					{/* expandable menu */}
 					{render}
 				</main>
 			</div>
@@ -78,46 +39,25 @@ export default class CardInfo extends React.Component {
 
 // @props(ride,requested,isHost,matchedRide, onClick(e))
 export function CardContent(props) {
-	const {
-		ride,
-		requested,
-		isHost,
-		matchedRide,
-		userInfoClassName,
-		...otherProps
-	} = props
-	const renderBtn = matchedRide ? (
-		<button
-			className="cancelBtn"
-			disabled={isHost ? false : true}
-			onClick={e => {
-				props.onClick(e)
-			}}
-		>
-			Cancel
-		</button>
-	) : (
-		<button
-			className="requestBtn"
-			disabled={requested || isHost ? true : false}
-			onClick={e => {
-				props.onClick(e)
-			}}
-		>
-			Request
-		</button>
-	)
+	const { ride, requested, isHost, isDriver, userInfoClassName, ...otherProps } = props
+	let renderBtn = ''
+	if (isDriver) renderBtn = <div className="card-info-alter">Hosting</div>
+	else if (requested) renderBtn = <div className="card-info-alter">Requested</div>
+	else {
+		renderBtn = (
+			<Button
+				label="Request"
+				color="blue"
+				disabled={requested || isHost ? true : false}
+				onClick={e => {
+					props.onClick(e)
+				}}
+			/>
+		)
+	}
 	return (
 		<main className="journey-info">
-			<div className="fare-cost-frame">
-				<div className="chip" style={{ backgroundColor: 'orange' }}>
-					<strong>Fare Cost is ${ride.rideCost}</strong>
-				</div>
-			</div>
-			<div className="rule-frame">
-				<header className="rule-title"> {'> Rules to follow <'}</header>
-				<p>{ride.disClaimer}</p>
-			</div>
+			<div>$ {ride.rideCost}</div>
 			{renderBtn}
 		</main>
 	)
@@ -143,32 +83,14 @@ export function CardUserInfo(props) {
 	}
 	function renderRating(rating) {
 		return (
-			<span style={{ color: 'orange', fontSize: '1.2rem' }}>
-				{`${getRating(Number(rating))}`}
-			</span>
+			<span style={{ color: 'orange', fontSize: '1.2rem' }}>{`${getRating(Number(rating))}`}</span>
 		)
 	}
-	const { multiUser, user1, user2, userInfoClassName, ...otherProps } = props
-	const renderSecondUser = multiUser ? (
-		<section className="title-header">
-			<div className="avatar-frame">
-				<div className="thumbnail">
-					<img className="avatar-img" src={user2.avatar} alt="avatar" />
-				</div>
-			</div>
-			<div className="title-bar">
-				<header className="title-bar-sub1">
-					<h3>{user2.userName}</h3>
-				</header>
-				<div className="title-bar-sub2">{renderRating(user2.rating)}</div>
-			</div>
-		</section>
-	) : (
-		undefined
-	)
+	const { user1, userInfoClassName, ...otherProps } = props
+
 	return (
-		<header className={multiUser ? 'title-container ' : ''}>
-			<section className={multiUser ? 'title-header spliter' : 'title-header '}>
+		<header className={'title-container '}>
+			<section className={'title-header '}>
 				<div className="avatar-frame">
 					<div className="thumbnail">
 						<img className="avatar-img" src={user1.avatar} alt="avatar" />
@@ -181,7 +103,6 @@ export function CardUserInfo(props) {
 					<div className="title-bar-sub2">{renderRating(user1.rating)}</div>
 				</div>
 			</section>
-			{renderSecondUser}
 		</header>
 	)
 }
@@ -190,31 +111,21 @@ export function CardUserInfo(props) {
 export function CardJourney(props) {
 	const { ride, ...otherProps } = props
 	return (
-		<section>
-			<div className="shortDesc">
-				<span className="shortDesc-prefix">FROM</span>
-				<span className="shortDesc-suffix">
-					<div className="chip" style={{ backgroundColor: '#42A76D' }}>{`${
-						ride.startCity
-					},${ride.startState}`}</div>
-				</span>
-			</div>
-			<div className="shortDesc">
-				<span className="shortDesc-prefix">TO</span>
-				<span className="shortDesc-suffix">
-					<div className="chip" style={{ backgroundColor: '#3595D7' }}>{`${
-						ride.arriveCity
-					},${ride.arriveState}`}</div>
-				</span>
-			</div>
-			<div className="date">
-				<span className="date-prefix">DEPART</span>
-				<span className="date-suffix">
-					<div className="chip" style={{ backgroundColor: '#ffb116' }}>
-						{`${moment(ride.scheduleDate).fromNow()}`}
-					</div>
-				</span>
-			</div>
-		</section>
+		<main className="card-info-direction-container">
+			<section className="line-container">
+				<div className="dot" />
+				<div className="vertical" />
+				<div className="dot" />
+			</section>
+			<section>
+				<div className="card-info-direction-text">
+					<p>{ride.startCity}</p>
+					<i>{ride.scheduleDate}</i>
+				</div>
+				<div className="card-info-direction-text">
+					<p>{ride.arriveCity}</p>
+				</div>
+			</section>
+		</main>
 	)
 }

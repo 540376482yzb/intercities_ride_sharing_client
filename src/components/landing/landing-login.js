@@ -1,24 +1,20 @@
 import React from 'react'
 import { reduxForm, Field, SubmissionError, focus } from 'redux-form'
 import { required, noEmpty, tooShort } from './validator'
-// import MenuItem from 'material-ui/MenuItem'
-import TextInput from './input-text'
-import RaisedButton from 'material-ui/RaisedButton'
+import { TextInput } from './input-text'
 import { connect } from 'react-redux'
 import { authUser } from '../../actions/auth'
+import { Button } from '../utilities'
+import './landing-login.css'
+import LoginIcon from 'react-icons/lib/io/log-in'
+import { Link } from 'react-router-dom'
 
 export class LogIn extends React.Component {
 	submitMe = value => {
 		return this.props.dispatch(authUser(value))
 	}
 	render() {
-		const {
-			submitSucceeded,
-			error,
-			handleSubmit,
-			pristine,
-			submitting
-		} = this.props
+		const { submitSucceeded, error, handleSubmit, pristine, submitting } = this.props
 
 		let successMessage
 		if (submitSucceeded) {
@@ -30,14 +26,19 @@ export class LogIn extends React.Component {
 		}
 
 		return (
-			<div>
+			<main role="main" className="login-page">
 				<form onSubmit={handleSubmit(value => this.submitMe(value))}>
+					<header className="login-header">
+						<LoginIcon size={30} />
+						<h3>Login</h3>
+					</header>
 					<Field
 						label="email"
 						name="email"
 						type="email"
 						component={TextInput}
 						validate={[required, noEmpty]}
+						placeholder="sally@fiction.com"
 					/>
 					<Field
 						label="password"
@@ -45,11 +46,12 @@ export class LogIn extends React.Component {
 						type="password"
 						component={TextInput}
 						validate={[required, noEmpty, tooShort]}
+						placeholder="sallymolly"
 					/>
 					<div>
-						<RaisedButton
+						<Button
 							label="Log In"
-							primary={true}
+							color="blue"
 							fullWidth={true}
 							type="submit"
 							disabled={pristine || submitting}
@@ -58,7 +60,20 @@ export class LogIn extends React.Component {
 						{errorMessage}
 					</div>
 				</form>
-			</div>
+				<section className="login-info">
+					<p>
+						Don't have an account?{' '}
+						<Link to="/landing/signup" className="login-link">
+							Sign up
+						</Link>
+					</p>
+				</section>
+				<section className="login-info">
+					<p>For demo purpose:</p>
+					<Button label="Demo host" color="blue" />
+					<Button label="Demo passenger" color="blue" />
+				</section>
+			</main>
 		)
 	}
 }

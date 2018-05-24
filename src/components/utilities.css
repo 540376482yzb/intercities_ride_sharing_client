@@ -1,0 +1,25 @@
+.button-blue {
+	background-color: #29b4d6;
+}
+.button-btn {
+	padding: 8px 16px;
+	box-shadow: 0 2px 4px 0 rgba(16, 36, 94, 0.2);
+	color: white;
+	border: 0;
+	border-radius: 3px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.button-btn:active {
+	transform: translateY(1px);
+}
+.button-full {
+	width: 100%;
+	padding: 10px 16px;
+}
+
+.button-btn:hover {
+	-webkit-filter: invert(5%);
+	filter: invert(5%);
+}

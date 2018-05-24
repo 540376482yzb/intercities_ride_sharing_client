@@ -1,18 +1,21 @@
 import React from 'react'
-import TextField from 'material-ui/TextField'
-export default function TextInput({ multiLine, input, label, meta, ...rest }) {
-	const styles = { width: '95%', margin: '0 auto' }
+import './input-text.css'
+export function TextInput({ input, type, label, placeholder, meta, ...rest }) {
 	return (
-		<div style={styles}>
-			<TextField
+		<section>
+			<label className="input-label" htmlFor={label}>
+				{label}
+			</label>
+			<input
 				{...input}
 				{...rest}
-				multiLine={multiLine}
-				floatingLabelText={label}
-				errorText={meta.touched && meta.error}
-				autoComplete="off"
-				fullWidth={true}
+				type={type}
+				label={label}
+				name={label}
+				className="input-input"
+				placeholder={placeholder}
 			/>
-		</div>
+			<div className="input-error">{meta.touched && meta.error ? meta.error : ''}</div>
+		</section>
 	)
 }

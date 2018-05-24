@@ -1,9 +1,12 @@
 import React from 'react'
 import { reduxForm, Field, SubmissionError, focus } from 'redux-form'
 import { required, noEmpty, tooShort, confirmPassword } from './validator'
-import TextInput from './input-text'
-import RaisedButton from 'material-ui/RaisedButton'
+import { TextInput } from './input-text'
 import { registerUser } from '../../actions/auth'
+import { Button } from '../utilities'
+import Register from 'react-icons/lib/io/link'
+import './landing-login.css'
+import { Link } from 'react-router-dom'
 
 const matched = confirmPassword('password')
 export const SignUp = props => {
@@ -11,6 +14,7 @@ export const SignUp = props => {
 
 	const submitMe = value => {
 		const { checkedPassword, ...newUser } = value
+		console.log(newUser)
 		return dispatch(registerUser(newUser))
 	}
 
@@ -24,11 +28,33 @@ export const SignUp = props => {
 	}
 
 	return (
-		<div>
+		<main role="sign up" className="login-page">
 			<form onSubmit={handleSubmit(value => submitMe(value))}>
-				<Field label="EMAIL" name="email" type="email" component={TextInput} validate={[required, noEmpty]} />
-				<Field label="first name" name="firstName" type="text" component={TextInput} validate={[required, noEmpty]} />
-				<Field label="last name" name="lastName" type="text" component={TextInput} validate={[required, noEmpty]} />
+				<header className="login-header">
+					<Register size={30} />
+					<h3>Sign Up</h3>
+				</header>
+				<Field
+					label="EMAIL"
+					name="email"
+					type="email"
+					component={TextInput}
+					validate={[required, noEmpty]}
+				/>
+				<Field
+					label="first name"
+					name="firstName"
+					type="text"
+					component={TextInput}
+					validate={[required, noEmpty]}
+				/>
+				<Field
+					label="last name"
+					name="lastName"
+					type="text"
+					component={TextInput}
+					validate={[required, noEmpty]}
+				/>
 				<Field
 					label="password"
 					name="password"
@@ -43,19 +69,25 @@ export const SignUp = props => {
 					component={TextInput}
 					validate={[required, noEmpty, tooShort, matched]}
 				/>
-				<div>
-					<RaisedButton
-						label="Sign Up"
-						primary={true}
-						fullWidth={true}
-						type="submit"
-						disabled={pristine || submitting}
-					/>
+				<Button
+					label="Sign Up"
+					fullWidth={true}
+					color="blue"
+					type="submit"
+					disabled={pristine || submitting}
+				/>
+				<div style={{ minHeight: '20px' }}>
 					{successMessage}
 					{errorMessage}
 				</div>
 			</form>
-		</div>
+			<section className="login-info">
+				Have an account?
+				<Link className="login-link" to="/landing/login">
+					Log in
+				</Link>
+			</section>
+		</main>
 	)
 }
 

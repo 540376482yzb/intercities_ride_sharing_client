@@ -40,9 +40,8 @@ export const fetchRides = () => (dispatch, getState) => {
 		.then(res => res.json())
 		.then(
 			rides => {
-				setTimeout(() => {
-					dispatch(fetchRidesSuccess(rides))
-				}, 1000)
+				console.log(rides)
+				return dispatch(fetchRidesSuccess(rides))
 			},
 			err => dispatch(fetchRidesError(err))
 		)
@@ -106,7 +105,10 @@ export const askForRide = (rideId, userId) => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(res => dispatch(askForRideSuccess(res.content.ride.id)), err => dispatch(askForRideError(err)))
+		.then(
+			res => dispatch(askForRideSuccess(res.content.ride.id)),
+			err => dispatch(askForRideError(err))
+		)
 }
 
 export const ACCEPT_RIDE_ERROR = 'ACCEPT_RIDE_ERROR'
