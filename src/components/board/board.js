@@ -7,10 +7,10 @@ import HostForm from './host-form.js'
 import { connect } from 'react-redux'
 import { fetchRides, clearSearch, askForRide, deleteRideSuccess } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
-import RaisedButton from 'material-ui/RaisedButton'
+import { searchOpen, searchClose } from '../../actions/utils'
+
 import requiresLogin from '../hoc/requireLogin'
-import FlatButton from 'material-ui/FlatButton'
-import Drawer from 'material-ui/Drawer'
+
 import Profile from './profile'
 import CardInfo from './card-info'
 import { initializeSocket } from '../../actions/socket'
@@ -18,19 +18,6 @@ import io from 'socket.io-client'
 import Loader from '../loader'
 import BoardHead from './BoardHead'
 export class Board extends React.Component {
-	constructor(props) {
-		super(props)
-		this.state = {
-			open: false,
-			snackBar: false,
-			message: ''
-		}
-
-		this.fireNotification = message =>
-			new Promise((resolve, reject) => {
-				return resolve(message)
-			})
-	}
 	componentDidMount() {
 		const socket = io('https://ride-share-server.herokuapp.com')
 		if (!this.props.hasSocket) {
@@ -38,17 +25,10 @@ export class Board extends React.Component {
 		}
 		this.props.dispatch(fetchRides())
 	}
-
-	openDrawer = () => this.setState({ open: true })
-	closeDrawer = () => this.setState({ open: false })
-
 	fireRequest(e) {
 		const rideId = e.currentTarget.closest('li').id
 		this.props.dispatch(askForRide(rideId, this.props.currentUser.id))
 	}
-	snackBarOpen = () => this.setState({ snackBar: true })
-
-	snackBarClose = () => this.setState({ snackBar: false })
 
 	openMyHost() {
 		return true
@@ -59,7 +39,6 @@ export class Board extends React.Component {
 		if (!rides) {
 			return <Loader />
 		}
-		const isHost = currentUser.host
 		const ridesWithNoMatch = rides.filter(ride => ride.match.length === 0)
 		let renderComponents = ridesWithNoMatch.map((ride, index) => {
 			const requested = currentUser.sentRequests.find(request => request === ride.id)
@@ -67,7 +46,6 @@ export class Board extends React.Component {
 			return (
 				<li key={index} id={ride.id} className="entry-list">
 					<CardInfo
-						isHost={isHost}
 						requested={requested}
 						ride={ride}
 						isDriver={isDriver}
@@ -78,22 +56,22 @@ export class Board extends React.Component {
 				</li>
 			)
 		})
-		let renderClearSearch = ''
-		if (this.props.filteredRides) {
-			renderClearSearch = (
-				<div
-					style={{
-						width: '100%',
-						height: '50px',
-						backgroundColor: 'rgb(238, 238, 238)',
-						display: 'flex',
-						alignItems: 'center'
-					}}
-				>
-					<RaisedButton label="Clear Search" onClick={() => this.props.dispatch(clearSearch())} />
-				</div>
-			)
-		}
+		// let renderClearSearch = ''
+		// if (this.props.filteredRides) {
+		// 	renderClearSearch = (
+		// 		<div
+		// 			style={{
+		// 				width: '100%',
+		// 				height: '50px',
+		// 				backgroundColor: 'rgb(238, 238, 238)',
+		// 				display: 'flex',
+		// 				alignItems: 'center'
+		// 			}}
+		// 		>
+		// 			<RaisedButton label="Clear Search" onClick={() => this.props.dispatch(clearSearch())} />
+		// 		</div>
+		// 	)
+		// }
 		return (
 			<main className="board-container">
 				<BoardHead />

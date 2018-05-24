@@ -1,7 +1,6 @@
 /*global google*/
 import React from 'react'
 import Slider from 'material-ui/Slider'
-import RaisedButton from 'material-ui/RaisedButton'
 import PlacesAutocomplete from 'react-places-autocomplete'
 import { narrowSearch } from '../../actions/rides'
 import { connect } from 'react-redux'
@@ -11,7 +10,7 @@ import { hostFormClose, fetchRides } from '../../actions/rides'
 import { addRide } from '../../actions/rides'
 import { editRide } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
-import TextField from 'material-ui/TextField'
+import { Button } from '../utilities'
 
 const labelStyles = {
 	display: 'block',
@@ -78,8 +77,7 @@ class SearchForm extends React.Component {
 			Object.keys(mySearchTerms).forEach(key => {
 				if (
 					mySearchTerms[key] &&
-					mySearchTerms[key].toLowerCase().trim() !==
-						ride[key].toLowerCase().trim()
+					mySearchTerms[key].toLowerCase().trim() !== ride[key].toLowerCase().trim()
 				) {
 					pass = false
 				}
@@ -117,14 +115,9 @@ class SearchForm extends React.Component {
 			componentRestrictions: { country: 'us' }
 		}
 
-		const renderSearchBtn = (
-			<RaisedButton label="Search" fullWidth={true} type="submit" />
-		)
+		const renderSearchBtn = <Button label="Search" color="blue" fullWidth={true} type="submit" />
 		return (
-			<form
-				onSubmit={e => this.handleSubmit(e)}
-				style={{ paddingBottom: '2rem' }}
-			>
+			<form onSubmit={e => this.handleSubmit(e)} style={{ paddingBottom: '2rem' }}>
 				<label style={labelStyles} htmlFor="startLocation">
 					{startLabel}
 				</label>

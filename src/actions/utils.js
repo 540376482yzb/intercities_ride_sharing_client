@@ -14,3 +14,12 @@ export const normalizeResponseErrors = res => {
 	}
 	return res
 }
+
+export const SEARCH_OPEN = 'SEARCH_OPEN'
+export const searchOpen = () => ({
+	type: SEARCH_OPEN
+})
+export const SEARCH_CLOSE = 'SEARCH_CLOSE'
+export const searchClose = () => ({
+	type: SEARCH_CLOSE
+})

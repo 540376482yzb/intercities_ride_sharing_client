@@ -12,13 +12,27 @@
 	box-shadow: 0 3px 6px 0 rgba(128, 128, 128, 0.164);
 	z-index: 2;
 }
-
+.nav-img-container {
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 35px;
+	height: 35px;
+	border-radius: 15px;
+}
 .nav-brand {
 	font-weight: bold;
 	font-size: 20px;
 	line-height: 30px;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 }
 
+.nav-search {
+	margin-left: 30px;
+}
 .nav-icons {
 	min-width: 150px;
 	display: flex;
@@ -47,7 +61,7 @@
 .nav-alert {
 	position: absolute;
 	top: -1px;
-	right: 10px;
+	right: 0px;
 	color: orange;
 }
 
@@ -59,5 +73,13 @@
 		display: block;
 		font-size: 14px;
 		color: rgba(0, 0, 0, 0.699);
+	}
+
+	.nav-alert {
+		top: -1px;
+		right: 8px;
+	}
+	.gone {
+		display: none;
 	}
 }

@@ -25,7 +25,7 @@ export class Landing extends React.Component {
 		if (this.state.loading) return <Loader />
 		const { currentUser, history } = this.props
 		if (currentUser) {
-			history.push('/dashboard')
+			history.push('/board')
 		}
 		return (
 			<main className="landing-content">

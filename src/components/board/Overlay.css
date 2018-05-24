@@ -1,0 +1,12 @@
+.overlay-container {
+	position: relative;
+	background-color: rgba(0, 0, 0, 0.295);
+}
+
+.overlay-message {
+	min-width: 320px;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+}
