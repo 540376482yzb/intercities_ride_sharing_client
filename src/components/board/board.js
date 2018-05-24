@@ -1,7 +1,6 @@
 import React from 'react'
 import '../landing/landing-header.css'
 import './board.css'
-import HostForm from './host-form.js'
 import { connect } from 'react-redux'
 import { fetchRides, clearSearch, askForRide, deleteRideSuccess } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
@@ -14,6 +13,9 @@ import Loader from '../loader'
 import BoardHead from './BoardHead'
 import Overlay from './Overlay'
 import SearchForm from './search-form'
+import { Button } from '../utilities'
+import { hostOpen } from '../../actions/utils'
+import HostForm from './host-form.js'
 export class Board extends React.Component {
 	componentDidMount() {
 		const socket = io('https://ride-share-server.herokuapp.com')
@@ -32,7 +34,7 @@ export class Board extends React.Component {
 	}
 
 	render() {
-		const { rides, currentUser, isSearchOpen } = this.props
+		const { rides, currentUser, isSearchOpen, isHostOpen, dispatch } = this.props
 		if (!rides) {
 			return <Loader />
 		}
@@ -72,7 +74,9 @@ export class Board extends React.Component {
 		return (
 			<main className="board-container">
 				<BoardHead />
-
+				<section className="board-foot">
+					<Button label="Hosting a trip" color="blue" onClick={() => dispatch(hostOpen())} />
+				</section>
 				{isSearchOpen ? (
 					<Overlay>
 						<SearchForm />
@@ -80,31 +84,18 @@ export class Board extends React.Component {
 				) : (
 					''
 				)}
-
+				{isHostOpen ? (
+					<Overlay>
+						<HostForm />
+					</Overlay>
+				) : (
+					''
+				)}
 				{/* {renderClearSearch} */}
 				<ul className="entry-list-container">{renderComponents}</ul>
-
-				{/* <Drawer
-					docked={false}
-					width={350}
-					open={this.state.open}
-					onRequestChange={open => this.setState({ open })}
-				>
-					<header className="header-container">
-						<div className="board-logo">
-							<LandingHeader filter={true} opacityValue={1} height={4} />
-						</div>
-						<div className="board-close-btn">
-							<FlatButton
-								label="&#11164;"
-								labelStyle={{ fontSize: '1.3rem', color: 'white' }}
-								onClick={() => this.closeDrawer()}
-							/>
-						</div>
-					</header>
-					<DrawerList onClick={() => console.log('close')} />
-				</Drawer>
-				<HostForm /> */}
+				<section className="board-search-box">
+					<SearchForm />
+				</section>
 			</main>
 		)
 	}
@@ -117,7 +108,8 @@ const mapStateToProps = state => {
 		currentUser: state.auth.currentUser,
 		authToken: state.auth.authToken,
 		hasSocket: !!state.socket.socket,
-		isSearchOpen: state.control.searchOpen
+		isSearchOpen: state.control.searchOpen,
+		isHostOpen: state.control.hostOpen
 	}
 }
 

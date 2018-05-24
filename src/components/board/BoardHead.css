@@ -79,6 +79,8 @@
 		top: -1px;
 		right: 8px;
 	}
+}
+@media screen and (min-width: 1080px) {
 	.gone {
 		display: none;
 	}

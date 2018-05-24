@@ -6,10 +6,10 @@ import PlacesAutocomplete from 'react-places-autocomplete'
 import { connect } from 'react-redux'
 import DatePicker from 'material-ui/DatePicker'
 import { withRouter } from 'react-router-dom'
-import { hostFormClose, fetchRides } from '../../actions/rides'
-import { addRide } from '../../actions/rides'
+import { addRide, fetchRides } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
-import TextField from 'material-ui/TextField'
+import { Button } from '../utilities'
+import { hostClose } from '../../actions/utils'
 
 const labelStyles = {
 	display: 'block',
@@ -18,12 +18,12 @@ const labelStyles = {
 }
 const inputStyles = {
 	input: {
-		width: '90%',
+		width: '100%',
 		border: 0,
 		borderBottom: '2px solid #00BCD4'
 	},
 	autocompleteContainer: {
-		width: '95%',
+		width: '100%',
 		zIndex: '1050'
 	}
 	// autocompleteItem: {
@@ -75,12 +75,11 @@ class CreateForm extends React.Component {
 			...simpleForm,
 			scheduleDate,
 			rideCost,
-			driver: this.props.driver,
-			disClaimer: this.state.disClaimer
+			driver: this.props.driver
 		})
 	}
 	handleHost(submitForm) {
-		this.props.dispatch(hostFormClose())
+		this.props.dispatch(hostClose())
 		this.props
 			.dispatch(addRide(submitForm))
 			.then(() => {
@@ -122,7 +121,9 @@ class CreateForm extends React.Component {
 				</label>
 				<DatePicker
 					value={
-						typeof this.state.scheduleDate === 'string' ? new Date(this.state.scheduleDate) : this.state.scheduleDate
+						typeof this.state.scheduleDate === 'string'
+							? new Date(this.state.scheduleDate)
+							: this.state.scheduleDate
 					}
 					floatingLabelText="Date"
 					id="date"
@@ -133,35 +134,14 @@ class CreateForm extends React.Component {
 			</div>
 		)
 
-		const renderDisclaimer = (
-			<div>
-				<label htmlFor="rules">Rules to Follow:</label>
-				<TextField
-					name="rules"
-					id="rules"
-					multiLine={true}
-					fullWidth={true}
-					value={this.state.disClaimer}
-					onChange={this.handleDisclaimer}
-				/>
-			</div>
-		)
 		const renderCommonBtn = (
 			<div>
-				<RaisedButton
-					label="Submit"
-					labelColor="#f5f5f5"
-					type="submit"
-					backgroundColor="#8BC34A"
-					style={{ margin: '5px 10px' }}
-				/>
-				<RaisedButton
+				<Button label="Submit" color="blue" type="submit" backgroundColor="#8BC34A" />
+				<Button
 					label="Cancel"
-					labelColor="#f5f5f5"
+					color="white"
 					type="button"
-					backgroundColor="#FFBAB3"
-					style={{ margin: '5px 10px' }}
-					onClick={() => this.props.dispatch(hostFormClose())}
+					onClick={() => this.props.dispatch(hostClose())}
 				/>
 			</div>
 		)
@@ -207,7 +187,6 @@ class CreateForm extends React.Component {
 					onChange={this.handleSlider}
 					style={{ width: '95%' }}
 				/>
-				{renderDisclaimer}
 				{renderCommonBtn}
 			</form>
 		)

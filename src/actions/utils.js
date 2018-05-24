@@ -23,3 +23,11 @@ export const SEARCH_CLOSE = 'SEARCH_CLOSE'
 export const searchClose = () => ({
 	type: SEARCH_CLOSE
 })
+export const HOST_OPEN = 'HOST_OPEN'
+export const hostOpen = () => ({
+	type: HOST_OPEN
+})
+export const HOST_CLOSE = 'HOST_CLOSE'
+export const hostClose = () => ({
+	type: HOST_CLOSE
+})
