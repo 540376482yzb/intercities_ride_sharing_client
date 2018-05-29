@@ -2,40 +2,22 @@
 import React from 'react'
 import Slider from 'material-ui/Slider'
 import RaisedButton from 'material-ui/RaisedButton'
-import PlacesAutocomplete from 'react-places-autocomplete'
 import { connect } from 'react-redux'
 import DatePicker from 'material-ui/DatePicker'
 import { withRouter } from 'react-router-dom'
 import { addRide, fetchRides } from '../../actions/rides'
-import { refreshAuthToken, fetchUser } from '../../actions/auth'
+import { refreshAuthToken, fetchUser, fetchUserSuccess } from '../../actions/auth'
 import { Button } from '../utilities'
 import { hostClose } from '../../actions/utils'
-
+import { LocationSearch } from './LocationSearch'
+import './create-form.css'
 const labelStyles = {
 	display: 'block',
 	fontWeight: '400',
-	padding: '1rem 0'
+	padding: '1rem 0',
+	width: '100%'
 }
-const inputStyles = {
-	input: {
-		width: '100%',
-		border: 0,
-		borderBottom: '2px solid #00BCD4'
-	},
-	autocompleteContainer: {
-		width: '100%',
-		zIndex: '1050'
-	}
-	// autocompleteItem: {
-	// 	backgroundColor: '#ffffff',
-	// 	padding: '10px',
-	// 	color: '#555555',
-	// 	cursor: 'pointer'
-	// },
-	// autocompleteItemActive: {
-	// 	backgroundColor: '#fafafa'
-	// }
-}
+
 class CreateForm extends React.Component {
 	constructor(props) {
 		super(props)
@@ -43,22 +25,28 @@ class CreateForm extends React.Component {
 			maxCost: 100,
 			startLoc: '',
 			arriveLoc: '',
-			scheduleDate: new Date(),
-			disClaimer: ''
+			startCoor: [],
+			arriveCoor: [],
+			scheduleDate: new Date()
 		}
 		this.initialState = {
 			maxCost: 100,
 			startLoc: '',
 			arriveLoc: '',
+			startCoor: [],
+			arriveCoor: [],
 			scheduleDate: new Date(),
 			disClaimer: ''
 		}
-		this.startLocOnChange = value => this.setState({ startLoc: value })
-		this.arriveLocOnChange = value => this.setState({ arriveLoc: value })
-		this.handleSlider = (event, value) => this.setState({ maxCost: value })
-		this.handleDisclaimer = (e, value) => this.setState({ disClaimer: value })
-	}
 
+		this.handleSlider = (event, value) => this.setState({ maxCost: value })
+	}
+	getStartLocation = location => {
+		this.setState({ startLoc: location.address, startCoor: location.coordinate })
+	}
+	getArriveLocation = location => {
+		this.setState({ arriveLoc: location.address, arriveCoor: location.coordinate })
+	}
 	handleSubmit(e) {
 		e.preventDefault()
 		const startCityAndState = this.state.startLoc.split(',').slice(0, 2)
@@ -69,51 +57,34 @@ class CreateForm extends React.Component {
 			arriveCity: arriveCityAndState[0],
 			arriveState: arriveCityAndState[1]
 		}
-		const scheduleDate = this.state.scheduleDate
+		const scheduleDate = this.state.scheduleDate.getTime()
 		const rideCost = this.state.maxCost
+		const { startCoor, arriveCoor } = this.state
 		this.handleHost({
 			...simpleForm,
 			scheduleDate,
 			rideCost,
+			startCoordinate: startCoor,
+			arriveCoordinate: arriveCoor,
+			maxOccupancy: this.select.value,
 			driver: this.props.driver
 		})
 	}
+
 	handleHost(submitForm) {
+		console.log(submitForm)
 		this.props.dispatch(hostClose())
 		this.props
 			.dispatch(addRide(submitForm))
 			.then(() => {
-				this.props.dispatch(fetchRides())
-				this.props.dispatch(fetchUser(this.props.driver))
-				this.props.dispatch(refreshAuthToken())
+				return this.props.dispatch(fetchUser(this.props.driver))
 			})
+			.then(user => this.props.dispatch(fetchUserSuccess(user)))
 			.catch(err => console.log(err))
 	}
 
 	render() {
 		const { startLabel, arriveLabel, costLabel, dateLabel } = this.props
-		const startLoc = {
-			name: 'startLocation',
-			type: 'text',
-			id: 'startLocation',
-			value: this.state.startLoc,
-			onChange: this.startLocOnChange,
-			placeholder: 'Hint: Sacramento,CA,USA'
-		}
-		const arriveLoc = {
-			name: 'arriveLocation',
-			type: 'text',
-			id: 'arriveLocation',
-			value: this.state.arriveLoc,
-			onChange: this.arriveLocOnChange,
-			placeholder: 'Hint: San Francisco,CA,USA'
-		}
-
-		const options = {
-			types: ['(cities)'],
-			componentRestrictions: { country: 'us' }
-		}
-
 		const renderDatePicker = (
 			<div>
 				<label style={labelStyles} htmlFor="date">
@@ -133,10 +104,9 @@ class CreateForm extends React.Component {
 				<br />
 			</div>
 		)
-
 		const renderCommonBtn = (
 			<div>
-				<Button label="Submit" color="blue" type="submit" backgroundColor="#8BC34A" />
+				<Button label="Submit" color="blue" type="submit" />
 				<Button
 					label="Cancel"
 					color="white"
@@ -150,26 +120,27 @@ class CreateForm extends React.Component {
 				<label style={labelStyles} htmlFor="startLocation">
 					{startLabel}
 				</label>
-				<PlacesAutocomplete
-					id="startLocation"
-					name="startLocation"
-					inputProps={startLoc}
-					options={options}
-					styles={inputStyles}
-				/>
+				<LocationSearch getLocation={this.getStartLocation} />
 				<br />
 				<label style={labelStyles} htmlFor="arriveLocation">
 					{arriveLabel}
 				</label>
-				<PlacesAutocomplete
-					id="arriveLocation"
-					name="arriveLocation"
-					inputProps={arriveLoc}
-					options={options}
-					styles={inputStyles}
-				/>
+				<LocationSearch getLocation={this.getArriveLocation} />
 				<br />
-				{renderDatePicker}
+				<div className="random-css">
+					{renderDatePicker}
+					<label style={labelStyles} htmlFor="max-occupancy">
+						Max-occupancy
+					</label>
+					<div>
+						<select ref={ref => (this.select = ref)}>
+							<option value="2">2</option>
+							<option value="4">4</option>
+							<option value="7">7</option>
+							<option value="9">9</option>
+						</select>
+					</div>
+				</div>
 				<label style={labelStyles} htmlFor="maxCost">
 					{costLabel}
 				</label>

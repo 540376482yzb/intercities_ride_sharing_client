@@ -154,7 +154,6 @@ export const fetchRide = rideId => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(ride => dispatch(fetchRideSuccess(ride)), err => dispatch(fetchRideError(err)))
 }
 
 export const DELETE_REQUESTS_ERROR = 'DELETE_REQUESTS_ERROR'
@@ -279,12 +278,45 @@ export const deleteRide = (rideId, currentUserId) => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(
-			res => {
-				return dispatch(deleteRideRequest())
-			},
-			err => {
-				return dispatch(deleteRideError(err))
-			}
-		)
+}
+
+export const REQUEST_MATCH_LOCK_SUCCESS = 'REQUEST_MATCH_LOCK_SUCCESS'
+export const requestMatchLockSuccess = () => ({
+	type: REQUEST_MATCH_LOCK_SUCCESS
+})
+export const REQUEST_MATCH_UNLOCK_SUCCESS = 'REQUEST_MATCH_UNLOCK_SUCCESS'
+export const requestMatchUnLockSuccess = () => ({
+	type: REQUEST_MATCH_UNLOCK_SUCCESS
+})
+
+export const requestMatchLock = rideId => (dispatch, getState) => {
+	const authToken = getState().auth.authToken
+	const user = getState().auth.currentUser
+	return fetch(`${API_BASE_URL}/board/match/${rideId}`, {
+		method: 'PUT',
+		body: JSON.stringify({ driverId: user.id, manualLock: 'lock' }),
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${authToken}`
+		}
+	})
+		.then(res => normalizeResponseErrors(res))
+		.then(res => res.json())
+		.then(() => dispatch(requestMatchLockSuccess()))
+}
+
+export const requestMatchUnLock = rideId => (dispatch, getState) => {
+	const authToken = getState().auth.authToken
+	const user = getState().auth.currentUser
+	return fetch(`${API_BASE_URL}/board/match/${rideId}`, {
+		method: 'PUT',
+		body: JSON.stringify({ driverId: user.id, manualLock: 'unlock' }),
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${authToken}`
+		}
+	})
+		.then(res => normalizeResponseErrors(res))
+		.then(res => res.json())
+		.then(() => dispatch(requestMatchUnLockSuccess()))
 }

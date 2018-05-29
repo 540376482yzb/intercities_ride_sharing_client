@@ -1,0 +1,11 @@
+.random-css {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	flex-wrap: wrap;
+}
+.random-css select {
+	width: 50px;
+	padding: 5px;
+	border-radius: 5px;
+}

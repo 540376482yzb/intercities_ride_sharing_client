@@ -112,7 +112,7 @@ export const fetchUserError = error => ({
 
 export const fetchUser = userId => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
-	fetch(`${API_BASE_URL}/user/${userId}`, {
+	return fetch(`${API_BASE_URL}/user/${userId}`, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${authToken}`
@@ -120,10 +120,10 @@ export const fetchUser = userId => (dispatch, getState) => {
 	})
 		.then(res => normalizeResponseErrors(res))
 		.then(res => res.json())
-		.then(
-			res => {
-				dispatch(fetchUserSuccess(res))
-			},
-			err => dispatch(fetchUserError(err))
-		)
+}
+
+export const userLogOut = () => (dispatch, getState) => {
+	const authToken = getState().auth.authToken
+	dispatch(clearAuthToken())
+	clearLocalAuthToken(authToken)
 }

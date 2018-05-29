@@ -1,0 +1,29 @@
+.chat-outer {
+	border-radius: 5px;
+	padding: 10px;
+	box-shadow: 2px 2px 4px 2px rgba(16, 36, 94, 0.2);
+}
+
+.chat-header {
+	background-color: white;
+}
+
+#chat {
+	overflow-y: scroll;
+	list-style-type: none;
+	min-height: 300px;
+	max-height: 400px;
+	padding-left: 12px;
+	display: flex;
+	flex-direction: column;
+	padding-bottom: 50px;
+}
+
+#chat::-webkit-scrollbar {
+	width: 1px !important; /* remove scrollbar space */
+	background: transparent; /* optional: just make scrollbar invisible */
+}
+/* optional: show position indicator in red */
+#chat::-webkit-scrollbar-thumb {
+	background: #29b4d6;
+}

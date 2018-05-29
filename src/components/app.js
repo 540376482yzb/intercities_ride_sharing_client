@@ -3,7 +3,7 @@ import { Route, withRouter, Switch, Redirect } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Landing from './landing/landing'
 import Board from './board/board'
-import SingleBoard from './single-board/singleBoard'
+import Match from './board/Match'
 export class App extends React.Component {
 	render() {
 		return (
@@ -11,8 +11,8 @@ export class App extends React.Component {
 				<Switch>
 					<Redirect exact from="/" to="/landing" />
 					<Route path="/landing" component={Landing} />
-					<Route path="/board" component={Board} />
-					<Route path="/single-board" component={SingleBoard} />
+					<Route exact path="/board" component={Board} />
+					<Route exact path="/match" component={Match} />
 				</Switch>
 			</div>
 		)

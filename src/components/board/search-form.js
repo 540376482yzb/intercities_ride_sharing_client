@@ -12,32 +12,14 @@ import { editRide } from '../../actions/rides'
 import { refreshAuthToken, fetchUser } from '../../actions/auth'
 import { Button } from '../utilities'
 import { searchClose } from '../../actions/utils'
+import { LocationSearch } from './LocationSearch'
 
 const labelStyles = {
 	display: 'block',
 	fontWeight: 'bold',
 	padding: '1rem 0',
-	color: 'rgba(0, 0, 0, 0.6)'
-}
-const inputStyles = {
-	input: {
-		width: '100%',
-		border: 0,
-		borderBottom: '2px solid #00BCD4'
-	},
-	autocompleteContainer: {
-		width: '100%',
-		zIndex: '1050'
-	}
-	// autocompleteItem: {
-	// 	backgroundColor: '#ffffff',
-	// 	padding: '10px',
-	// 	color: '#555555',
-	// 	cursor: 'pointer'
-	// },
-	// autocompleteItemActive: {
-	// 	backgroundColor: '#fafafa'
-	// }
+	color: 'rgba(0, 0, 0, 0.6)',
+	width: '100%'
 }
 class SearchForm extends React.Component {
 	constructor(props) {
@@ -46,17 +28,12 @@ class SearchForm extends React.Component {
 			maxCost: 100,
 			startLoc: '',
 			arriveLoc: '',
-			scheduleDate: new Date(),
-			disClaimer: ''
+			scheduleDate: new Date()
 		}
 		this.initialState = {
 			maxCost: 100,
-			startLoc: '',
-			arriveLoc: '',
 			scheduleDate: new Date()
 		}
-		this.startLocOnChange = value => this.setState({ startLoc: value })
-		this.arriveLocOnChange = value => this.setState({ arriveLoc: value })
 		this.handleSlider = (event, value) => this.setState({ maxCost: value })
 	}
 
@@ -70,7 +47,6 @@ class SearchForm extends React.Component {
 			arriveCity: arriveCityAndState[0],
 			arriveState: arriveCityAndState[1]
 		}
-		// submit in search form
 		this.handleSearch(simpleForm)
 	}
 	handleSearch(mySearchTerms) {
@@ -90,28 +66,10 @@ class SearchForm extends React.Component {
 			return pass
 		})
 		this.props.dispatch(narrowSearch(results))
-		this.setState(this.initialState)
 		this.props.dispatch(searchClose())
 	}
 
 	render() {
-		const startLoc = {
-			name: 'startLocation',
-			type: 'text',
-			id: 'startLocation',
-			value: this.state.startLoc,
-			onChange: this.startLocOnChange,
-			placeholder: 'Hint: Sacramento,CA,USA'
-		}
-		const arriveLoc = {
-			name: 'arriveLocation',
-			type: 'text',
-			id: 'arriveLocation',
-			value: this.state.arriveLoc,
-			onChange: this.arriveLocOnChange,
-			placeholder: 'Hint: San Francisco,CA,USA'
-		}
-
 		const options = {
 			types: ['(cities)'],
 			componentRestrictions: { country: 'us' }
@@ -119,28 +77,16 @@ class SearchForm extends React.Component {
 
 		const renderSearchBtn = <Button label="Search" color="blue" fullWidth={true} type="submit" />
 		return (
-			<form onSubmit={e => this.handleSubmit(e)} style={{ paddingBottom: '2rem' }}>
+			<form onSubmit={e => this.handleSubmit(e)}>
 				<label style={labelStyles} htmlFor="startLocation">
 					Origination
 				</label>
-				<PlacesAutocomplete
-					id="startLocation"
-					name="startLocation"
-					inputProps={startLoc}
-					options={options}
-					styles={inputStyles}
-				/>
+				<LocationSearch getLocation={location => this.getStartLocation(location)} />
 				<br />
 				<label style={labelStyles} htmlFor="arriveLocation">
 					Destination
 				</label>
-				<PlacesAutocomplete
-					id="arriveLocation"
-					name="arriveLocation"
-					inputProps={arriveLoc}
-					options={options}
-					styles={inputStyles}
-				/>
+				<LocationSearch />
 				<br />
 				<label style={labelStyles} htmlFor="maxCost">
 					Acceptable cost

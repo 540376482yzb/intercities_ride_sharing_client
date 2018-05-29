@@ -3,12 +3,10 @@ import '../landing/landing-header.css'
 import './board.css'
 import { connect } from 'react-redux'
 import { fetchRides, clearSearch, askForRide, deleteRideSuccess } from '../../actions/rides'
-import { refreshAuthToken, fetchUser } from '../../actions/auth'
+import { refreshAuthToken, fetchUser, fetchUserSuccess } from '../../actions/auth'
 import requiresLogin from '../hoc/requireLogin'
 import Profile from './profile'
 import CardInfo from './card-info'
-import { initializeSocket } from '../../actions/socket'
-import io from 'socket.io-client'
 import Loader from '../loader'
 import BoardHead from './BoardHead'
 import Overlay from './Overlay'
@@ -17,12 +15,17 @@ import { Button } from '../utilities'
 import { hostOpen } from '../../actions/utils'
 import HostForm from './host-form.js'
 export class Board extends React.Component {
-	componentDidMount() {
-		const socket = io('https://ride-share-server.herokuapp.com')
-		if (!this.props.hasSocket) {
-			this.props.dispatch(initializeSocket())
+	constructor(props) {
+		super(props)
+		this.state = {
+			searchOn: false
 		}
-		this.props.dispatch(fetchRides())
+	}
+	componentDidMount() {
+		this.props.dispatch(fetchUser(this.props.currentUser.id)).then(user => {
+			this.props.dispatch(fetchUserSuccess(user))
+			this.props.dispatch(fetchRides())
+		})
 	}
 	fireRequest(e) {
 		const rideId = e.currentTarget.closest('li').id
@@ -34,12 +37,25 @@ export class Board extends React.Component {
 	}
 
 	render() {
-		const { rides, currentUser, isSearchOpen, isHostOpen, dispatch } = this.props
-		if (!rides) {
+		const {
+			rides,
+			filteredRides,
+			currentUser,
+			isSearchOpen,
+			isHostOpen,
+			dispatch,
+			history
+		} = this.props
+		if (!rides || !currentUser) {
 			return <Loader />
 		}
-		const ridesWithNoMatch = rides.filter(ride => ride.match.length === 0)
-		let renderComponents = ridesWithNoMatch.map((ride, index) => {
+		if (currentUser && currentUser['match']) {
+			history.push('/match')
+		}
+		const ridesWithNoLock = filteredRides
+			? filteredRides.filter(ride => ride.match.length < ride.maxOccupation && !ride.lock)
+			: rides.filter(ride => ride.match.length < ride.maxOccupation && !ride.lock)
+		let renderComponents = ridesWithNoLock.map((ride, index) => {
 			const requested = currentUser.sentRequests.find(request => request === ride.id)
 			const isDriver = currentUser.id === ride.driver.id
 			return (
@@ -55,26 +71,16 @@ export class Board extends React.Component {
 				</li>
 			)
 		})
-		// let renderClearSearch = ''
-		// if (this.props.filteredRides) {
-		// 	renderClearSearch = (
-		// 		<div
-		// 			style={{
-		// 				width: '100%',
-		// 				height: '50px',
-		// 				backgroundColor: 'rgb(238, 238, 238)',
-		// 				display: 'flex',
-		// 				alignItems: 'center'
-		// 			}}
-		// 		>
-		// 			<RaisedButton label="Clear Search" onClick={() => this.props.dispatch(clearSearch())} />
-		// 		</div>
-		// 	)
-		// }
+
 		return (
 			<main className="board-container">
-				<BoardHead />
+				<BoardHead currentUser={currentUser} />
 				<section className="board-foot">
+					{filteredRides ? (
+						<Button label="Clear Search" color="red" onClick={() => dispatch(clearSearch())} />
+					) : (
+						''
+					)}
 					<Button label="Hosting a trip" color="blue" onClick={() => dispatch(hostOpen())} />
 				</section>
 				{isSearchOpen ? (
@@ -91,7 +97,6 @@ export class Board extends React.Component {
 				) : (
 					''
 				)}
-				{/* {renderClearSearch} */}
 				<ul className="entry-list-container">{renderComponents}</ul>
 				<section className="board-search-box">
 					<SearchForm />
@@ -106,8 +111,6 @@ const mapStateToProps = state => {
 		rides: state.rideReducer.rides,
 		filteredRides: state.rideReducer.filteredRides,
 		currentUser: state.auth.currentUser,
-		authToken: state.auth.authToken,
-		hasSocket: !!state.socket.socket,
 		isSearchOpen: state.control.searchOpen,
 		isHostOpen: state.control.hostOpen
 	}

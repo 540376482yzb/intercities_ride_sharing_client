@@ -10,23 +10,44 @@
 
 .overlay-message {
 	background-color: white;
-	padding: 50px 20px 20px 20px;
+	padding: 20px 20px 20px 20px;
 	min-width: 320px;
+	max-width: 500px;
+	margin: auto auto;
 	position: fixed;
+	height: 100%;
 	top: 0;
-
-	bottom: 0;
 	left: 0;
 	right: 0;
 	z-index: 1001;
+	overflow-y: scroll;
+}
+
+@media screen and (min-width: 412px) {
+	.overlay-message {
+		background-color: white;
+		padding: 20px 20px 20px 20px;
+		min-width: 320px;
+		max-width: 500px;
+		margin: auto auto;
+		position: fixed;
+		height: 700px;
+		top: 50px;
+		left: 0;
+		right: 0;
+		z-index: 1001;
+		overflow-y: scroll;
+	}
 }
 
 .overlay-nav {
+	background-color: white;
+	max-width: 500px;
+	/* margin: auto auto;
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	padding: 10px;
-	z-index: 0;
-	box-shadow: 0 2px 4px 0 rgba(16, 36, 94, 0.2);
+	z-index: 0; */
 }

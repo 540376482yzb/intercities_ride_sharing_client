@@ -6,6 +6,9 @@
 	background-color: white;
 	color: rgba(0, 0, 0, 0.788) !important;
 }
+.button-red {
+	background-color: rgb(238, 65, 65);
+}
 .button-btn {
 	padding: 8px 16px;
 	box-shadow: 0 2px 4px 0 rgba(16, 36, 94, 0.2);
@@ -14,6 +17,7 @@
 	border-radius: 3px;
 	font-weight: bold;
 	cursor: pointer;
+	margin: 0 10px;
 }
 
 .button-btn:active {
@@ -22,6 +26,7 @@
 .button-full {
 	width: 100%;
 	padding: 10px 16px;
+	margin: 0;
 }
 
 .button-btn:hover {

@@ -20,7 +20,9 @@ import {
 	CANCEL_MATCH_SUCCESS,
 	DELETE_RIDE_ERROR,
 	DELETE_RIDE_SUCCESS,
-	DELETE_RIDE_REQUEST
+	DELETE_RIDE_REQUEST,
+	REQUEST_MATCH_LOCK_SUCCESS,
+	REQUEST_MATCH_UNLOCK_SUCCESS
 } from '../actions/rides'
 
 const initialState = {
@@ -28,9 +30,8 @@ const initialState = {
 	filteredRides: null,
 	loading: false,
 	error: null,
-	matchedRide: null,
-	hostForm: false,
-	deletingRide: false
+	deletingRide: false,
+	matchedRide: null
 }
 export default function rideReducer(state = initialState, action) {
 	let newState
@@ -76,6 +77,7 @@ export default function rideReducer(state = initialState, action) {
 		return newState
 	}
 	if (action.type === FETCH_RIDE_SUCCESS) {
+		console.log('from ride reducer')
 		newState = { ...state, error: null, matchedRide: action.ride }
 		return newState
 	}
@@ -87,9 +89,7 @@ export default function rideReducer(state = initialState, action) {
 		let updateRequests
 		const rides = state.rides.map(ride => {
 			if (ride.id === action.ride.id) {
-				updateRequests = ride.requests.filter(
-					request => request !== action.passengerId
-				)
+				updateRequests = ride.requests.filter(request => request !== action.passengerId)
 				ride.requests = updateRequests
 			}
 			return ride
@@ -128,6 +128,14 @@ export default function rideReducer(state = initialState, action) {
 	}
 	if (action.type === DELETE_RIDE_SUCCESS) {
 		return { ...state, error: null, deletingRide: false }
+	}
+	if (action.type === REQUEST_MATCH_LOCK_SUCCESS) {
+		console.log('lock')
+		return { ...state, error: null, matchedRide: { ...state.matchedRide, lock: true } }
+	}
+	if (action.type === REQUEST_MATCH_UNLOCK_SUCCESS) {
+		console.log('unlock')
+		return { ...state, error: null, matchedRide: { ...state.matchedRide, lock: false } }
 	}
 
 	return state
