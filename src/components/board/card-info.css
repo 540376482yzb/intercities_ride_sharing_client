@@ -86,17 +86,35 @@
 
 .card-info-direction-text:first-of-type {
 	margin-bottom: 50px;
+	margin-top: 10px;
+	display: flex;
+	flex-wrap: wrap;
 }
 .card-info-direction-text p {
 	padding: 0;
 	margin: 0;
 	margin-left: 30px;
+	margin-bottom: 5px;
 	text-transform: capitalize;
 	font-weight: bold;
-	display: inline-block;
+	display: block;
+	line-height: 24px;
 }
-.card-info-direction-text p:nth-of-type(2) {
-	color: rgba(0, 0, 0, 0.584);
+.card-info-direction-text i {
+	display: block;
+	display: flex;
+	align-items: center;
+	font-size: 14px;
+	margin-left: 30px;
+}
+.card-info-time {
+	display: inline-block;
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.212);
+	margin: 0px 4px;
+	padding: 4px 6px;
+	background: rgba(17, 17, 17, 0.818);
+	color: rgba(255, 255, 255, 0.915);
+	border-radius: 5px;
 }
 
 .line-container {

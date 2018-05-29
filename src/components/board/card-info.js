@@ -198,7 +198,12 @@ export function CardJourney(props) {
 					<p>
 						{ride.startCity},{ride.startState}
 					</p>
-					<p>Departure {moment(Number(ride.scheduleDate)).format('MMM Do')}</p>
+					<i>
+						leave on{' '}
+						<span className="card-info-time">
+							{moment(Number(ride.scheduleDate)).format('MMM Do')}
+						</span>
+					</i>
 				</div>
 				<div className="card-info-direction-text">
 					<p>

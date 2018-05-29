@@ -1,3 +1,4 @@
+/*global google*/
 import React from 'react'
 import { connect } from 'react-redux'
 import CardInfo from './card-info'
@@ -8,7 +9,13 @@ import { fetchUser, fetchUserSuccess, fetchUserError } from '../../actions/auth'
 import './Match.css'
 import io from 'socket.io-client'
 import { initializeSocket } from '../../actions/socket'
-import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps'
+import {
+	withScriptjs,
+	withGoogleMap,
+	GoogleMap,
+	DirectionsRenderer,
+	Marker
+} from 'react-google-maps'
 import RequireLogin from '../hoc/requireLogin'
 import { withRouter } from 'react-router-dom'
 import Loader from '../loader'
@@ -140,6 +147,8 @@ export class Match extends React.Component {
 								loadingElement={<div style={{ height: '100%' }} />}
 								containerElement={<div className="match-map" />}
 								mapElement={<div style={{ height: '100%' }} />}
+								startCoordinate={ride.startCoordinate}
+								arriveCoordinate={ride.arriveCoordinate}
 							/>
 						</div>
 					</section>
@@ -170,8 +179,82 @@ export default withRouter(RequireLogin()(connect(mapStateToProps)(Match)))
 
 const MapWithAMarker = withScriptjs(
 	withGoogleMap(props => (
-		<GoogleMap defaultZoom={8} defaultCenter={{ lat: -34.397, lng: 150.644 }}>
-			<Marker position={{ lat: -34.397, lng: 150.644 }} />
-		</GoogleMap>
+		<Map startCoordinate={props.startCoordinate} arriveCoordinate={props.arriveCoordinate} />
 	))
 )
+
+class Map extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = { directions: null, distance: null, estimate: null }
+	}
+	componentDidMount() {
+		const { startCoordinate, arriveCoordinate } = this.props
+		const DirectionsService = new google.maps.DirectionsService()
+		DirectionsService.route(
+			{
+				origin: new google.maps.LatLng(startCoordinate[0], startCoordinate[1]),
+				destination: new google.maps.LatLng(arriveCoordinate[0], arriveCoordinate[1]),
+				travelMode: google.maps.TravelMode.DRIVING
+			},
+			(result, status) => {
+				if (status === google.maps.DirectionsStatus.OK) {
+					this.setState({
+						directions: result
+					})
+				} else {
+					console.error(`error fetching directions ${result}`)
+				}
+			}
+		)
+		const DistanceMatrixService = new google.maps.DistanceMatrixService()
+		DistanceMatrixService.getDistanceMatrix(
+			{
+				origins: [new google.maps.LatLng(startCoordinate[0], startCoordinate[1])],
+				destinations: [new google.maps.LatLng(arriveCoordinate[0], arriveCoordinate[1])],
+				travelMode: google.maps.TravelMode.DRIVING,
+				unitSystem: google.maps.UnitSystem.IMPERIAL
+			},
+			(response, status) => {
+				if (status === 'OK') {
+					console.log(response)
+					this.setState({
+						originAddress: response.originAddresses,
+						destinationAddress: response.destinationAddresses,
+						distance: response.rows[0].elements[0].distance.text,
+						estimate: response.rows[0].elements[0].duration.text
+					})
+				}
+			}
+		)
+	}
+	render() {
+		const { startCoordinate } = this.props
+		const { distance, estimate, originAddress, destinationAddress } = this.state
+		return (
+			<main className="map-container">
+				<GoogleMap
+					defaultZoom={7}
+					defaultCenter={new google.maps.LatLng(startCoordinate[0], startCoordinate[1])}
+				>
+					{this.state.directions && <DirectionsRenderer directions={this.state.directions} />}
+				</GoogleMap>
+				<section className="map-button">
+					<a
+						href={`https://www.google.com/maps/dir/${originAddress}/${destinationAddress}/@${
+							startCoordinate[0]
+						},${startCoordinate[1]},9.85z`}
+						target="_blank"
+					>
+						Go
+					</a>
+					<span>{distance}</span>
+				</section>
+				<section className="info-section">
+					<span>Travel time estimate</span>
+					<span>{estimate}</span>
+				</section>
+			</main>
+		)
+	}
+}

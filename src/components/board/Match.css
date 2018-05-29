@@ -6,12 +6,12 @@
 .entry-container {
 	width: 100%;
 	padding: 0;
-	padding-top: 50px;
+	padding-top: 30px;
 	background-color: white;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding-bottom: 35px;
+	padding-bottom: 30px;
 }
 
 .match-map {
@@ -28,7 +28,52 @@
 }
 .entry {
 	width: 100%;
-	margin: 10px 0 10px 0;
+	margin: 35px 0 10px 0;
+}
+
+.map-container {
+	position: relative;
+}
+.info-section {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background-color: #4285f4;
+	color: rgba(255, 255, 255, 0.877);
+	padding: 10px 20px;
+}
+
+.info-section span {
+	display: block;
+}
+.info-section span:first-of-type {
+	display: block;
+	font-weight: bold;
+	padding: 5px 0;
+}
+.map-button {
+	position: absolute;
+	bottom: 20px;
+	right: 45px;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: rgba(255, 255, 255, 0.904);
+	font-weight: bold;
+}
+.map-button a {
+	font-weight: bold;
+	font-size: 16px;
+	padding: 15px;
+	border-radius: 50%;
+	border: 0;
+	box-shadow: 0 4px 8px 0 rgba(16, 36, 94, 0.4);
+	background-color: white;
+	margin-bottom: 10px;
+	color: rgb(0, 0, 0, 0.75);
+	text-decoration: none;
 }
 
 @media screen and (min-width: 400px) {
@@ -38,7 +83,7 @@
 }
 @media screen and (min-width: 600px) {
 	.entry-container {
-		padding-top: 70px;
+		padding-top: 50px;
 	}
 }
 
