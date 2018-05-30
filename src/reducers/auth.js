@@ -4,14 +4,10 @@ import {
 	SET_AUTH_TOKEN,
 	CLEAR_AUTH_TOKEN,
 	FETCH_USER_ERROR,
-	FETCH_USER_SUCCESS
-} from '../actions/auth'
-import {
+	FETCH_USER_SUCCESS,
 	ASK_FOR_RIDE_ERROR,
-	ASK_FOR_RIDE_SUCCESS,
-	CANCEL_MATCH_ERROR,
-	CANCEL_MATCH_SUCCESS
-} from '../actions/rides'
+	ASK_FOR_RIDE_SUCCESS
+} from '../actions/auth'
 
 import Decoder from 'jwt-decode'
 const initialState = {
@@ -58,14 +54,6 @@ export default function authReducer(state = initialState, action) {
 	}
 	if (action.type === ASK_FOR_RIDE_ERROR) {
 		return { ...state, error: action.error }
-	}
-
-	if (action.type === CANCEL_MATCH_ERROR) {
-		return { ...state, error: action.error }
-	}
-
-	if (action.type === CANCEL_MATCH_SUCCESS) {
-		return { ...state, error: action.error, match: null, host: null }
 	}
 	return state
 }

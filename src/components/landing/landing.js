@@ -1,7 +1,7 @@
 import React from 'react'
 import './landing.css'
-import { Route, withRouter } from 'react-router-dom'
-import { connect } from 'react-redux'
+import {Route, withRouter} from 'react-router-dom'
+import {connect} from 'react-redux'
 import Intro from './landing-intro'
 import LandingHeader from './landing-header'
 import Loader from '../loader'
@@ -18,12 +18,12 @@ export class Landing extends React.Component {
 	}
 	componentDidMount() {
 		setTimeout(() => {
-			this.setState({ loading: false })
+			this.setState({loading: false})
 		}, 1000)
 	}
 	render() {
 		if (this.state.loading) return <Loader />
-		const { currentUser, history } = this.props
+		const {currentUser, history} = this.props
 		if (currentUser) {
 			history.push('/board')
 		}
@@ -31,7 +31,7 @@ export class Landing extends React.Component {
 			<main className="landing-content">
 				<LandingHeader height={6} />
 				<div className="landing-title">
-					<h2>Sharing A Ride</h2>
+					<h3>Ride & Share</h3>
 				</div>
 				<div className="landing-swap">
 					<Route exact path="/landing" component={Intro} />

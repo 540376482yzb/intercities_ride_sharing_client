@@ -122,6 +122,17 @@ export const fetchUser = userId => (dispatch, getState) => {
 		.then(res => res.json())
 }
 
+export const ASK_FOR_RIDE_ERROR = 'ASK_FOR_RIDE_ERROR'
+export const askForRideError = error => ({
+	type: ASK_FOR_RIDE_ERROR,
+	error
+})
+export const ASK_FOR_RIDE_SUCCESS = 'ASK_FOR_RIDE_SUCCESS'
+export const askForRideSuccess = rideId => ({
+	type: ASK_FOR_RIDE_SUCCESS,
+	rideId
+})
+
 export const userLogOut = () => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
 	dispatch(clearAuthToken())

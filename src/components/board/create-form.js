@@ -2,14 +2,14 @@
 import React from 'react'
 import Slider from 'material-ui/Slider'
 import RaisedButton from 'material-ui/RaisedButton'
-import { connect } from 'react-redux'
+import {connect} from 'react-redux'
 import DatePicker from 'material-ui/DatePicker'
-import { withRouter } from 'react-router-dom'
-import { addRide, fetchRides } from '../../actions/rides'
-import { refreshAuthToken, fetchUser, fetchUserSuccess } from '../../actions/auth'
-import { Button } from '../utilities'
-import { hostClose } from '../../actions/utils'
-import { LocationSearch } from './LocationSearch'
+import {withRouter} from 'react-router-dom'
+import {addRide, fetchRides} from '../../actions/rides'
+import {refreshAuthToken, fetchUser, fetchUserSuccess} from '../../actions/auth'
+import {Button} from '../utilities'
+import {hostClose} from '../../actions/utils'
+import {LocationSearch} from './LocationSearch'
 import './create-form.css'
 const labelStyles = {
 	display: 'block',
@@ -39,13 +39,13 @@ class CreateForm extends React.Component {
 			disClaimer: ''
 		}
 
-		this.handleSlider = (event, value) => this.setState({ maxCost: value })
+		this.handleSlider = (event, value) => this.setState({maxCost: value})
 	}
 	getStartLocation = location => {
-		this.setState({ startLoc: location.address, startCoor: location.coordinate })
+		this.setState({startLoc: location.address, startCoor: location.coordinate})
 	}
 	getArriveLocation = location => {
-		this.setState({ arriveLoc: location.address, arriveCoor: location.coordinate })
+		this.setState({arriveLoc: location.address, arriveCoor: location.coordinate})
 	}
 	handleSubmit(e) {
 		e.preventDefault()
@@ -59,7 +59,7 @@ class CreateForm extends React.Component {
 		}
 		const scheduleDate = this.state.scheduleDate.getTime()
 		const rideCost = this.state.maxCost
-		const { startCoor, arriveCoor } = this.state
+		const {startCoor, arriveCoor} = this.state
 		this.handleHost({
 			...simpleForm,
 			scheduleDate,
@@ -72,7 +72,6 @@ class CreateForm extends React.Component {
 	}
 
 	handleHost(submitForm) {
-		console.log(submitForm)
 		this.props.dispatch(hostClose())
 		this.props
 			.dispatch(addRide(submitForm))
@@ -80,11 +79,11 @@ class CreateForm extends React.Component {
 				return this.props.dispatch(fetchUser(this.props.driver))
 			})
 			.then(user => this.props.dispatch(fetchUserSuccess(user)))
-			.catch(err => console.log(err))
+			.catch(err => alert('something is not right'))
 	}
 
 	render() {
-		const { startLabel, arriveLabel, costLabel, dateLabel } = this.props
+		const {startLabel, arriveLabel, costLabel, dateLabel} = this.props
 		const renderDatePicker = (
 			<div>
 				<label style={labelStyles} htmlFor="date">
@@ -99,7 +98,7 @@ class CreateForm extends React.Component {
 					floatingLabelText="Date"
 					id="date"
 					name="date"
-					onChange={(event, date) => this.setState({ scheduleDate: date })}
+					onChange={(event, date) => this.setState({scheduleDate: date})}
 				/>
 				<br />
 			</div>
@@ -116,7 +115,7 @@ class CreateForm extends React.Component {
 			</div>
 		)
 		return (
-			<form onSubmit={e => this.handleSubmit(e)} style={{ paddingBottom: '2rem' }}>
+			<form onSubmit={e => this.handleSubmit(e)} style={{paddingBottom: '2rem'}}>
 				<label style={labelStyles} htmlFor="startLocation">
 					{startLabel}
 				</label>
@@ -156,7 +155,7 @@ class CreateForm extends React.Component {
 					name="maxCost"
 					value={this.state.maxCost}
 					onChange={this.handleSlider}
-					style={{ width: '95%' }}
+					style={{width: '95%'}}
 				/>
 				{renderCommonBtn}
 			</form>

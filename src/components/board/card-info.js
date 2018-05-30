@@ -3,27 +3,29 @@ import React from 'react'
 import './card-info.css'
 import * as moment from 'moment'
 import ArrowDown from 'react-icons/lib/io/ios-arrow-thin-down'
-import { Button } from '../utilities'
+import {Button} from '../utilities'
 import Alert from 'react-icons/lib/io/ios-circle-filled'
 import {
 	deleteRide,
 	requestMatchLock,
 	requestMatchUnLock,
 	fetchRide,
-	fetchRideSuccess
+	fetchRideSuccess,
+	deleteRideSuccess
 } from '../../actions/rides'
-import { fetchUser, fetchUserSuccess } from '../../actions/auth'
-import { connect } from 'react-redux'
+import {fetchUser, fetchUserSuccess, askForRideSuccess} from '../../actions/auth'
+import {connect} from 'react-redux'
 
 const mapStateToProps = state => {
 	return {
-		currentUser: state.auth.currentUser
+		currentUser: state.auth.currentUser,
+		socket: state.socket.socket
 	}
 }
 
 export default class CardInfo extends React.Component {
 	render() {
-		const { ride, requested, isMatch, isDriver, users, onlineUsers } = this.props
+		const {ride, requested, isMatch, isDriver, users, onlineUsers} = this.props
 		const userName = `${ride.driver.firstName}`
 
 		const render = (
@@ -62,41 +64,55 @@ export default class CardInfo extends React.Component {
 }
 
 export const CardContent = connect(mapStateToProps)(props => {
-	const { ride, requested, isDriver, isMatch, dispatch, currentUser } = props
+	const {ride, requested, isDriver, isMatch, dispatch, currentUser} = props
 	const handleLock = () => {
-		return dispatch(requestMatchLock(ride.id)).catch(err => console.log(err))
+		return dispatch(requestMatchLock(ride.id)).catch(err => alert('something is not right'))
 	}
 	const handleUnLock = () => {
-		return dispatch(requestMatchUnLock(ride.id)).catch(err => console.log(err))
+		return dispatch(requestMatchUnLock(ride.id)).catch(err => alert('something is not right'))
 	}
 	const renderLockBtn = () => {
-		if (ride.match.length >= ride.maxOccupation) return 'full'
+		if (ride.match.length >= ride.maxOccupancy) return 'full'
 		if (ride.lock) return <Button label="Unlock" color="white" onClick={() => handleUnLock()} />
 		return <Button label="Lock in" color="red" onClick={() => handleLock()} />
 	}
 	const handleDelete = () => {
 		return dispatch(deleteRide(ride.id, currentUser.id))
-			.then(() => fetchRideSuccess(null))
+			.then(() => dispatch(deleteRideSuccess()))
 			.then(() => dispatch(fetchUser(currentUser.id)))
 			.then(user => dispatch(fetchUserSuccess(user)))
-			.catch(err => console.log(err))
+			.catch(err => alert('something is not right'))
+	}
+
+	const handleRequest = () => {
+		const {ride, currentUser, socket, dispatch} = props
+		socket.emit('REQUEST_RIDE', {
+			roomId: ride.id,
+			message: {type: 'application', user: currentUser, completed: false},
+			createdOn: Date.now()
+		})
+		dispatch(askForRideSuccess(ride.id))
 	}
 	let renderBtn = ''
 	if (requested) renderBtn = <div className="card-info-alter">Requested</div>
 	else if (isMatch) {
-		renderBtn = (
-			<div>
-				{renderLockBtn()}
-				<Button label="End" color="blue" onClick={() => handleDelete()} />
-			</div>
-		)
+		if (currentUser.host) {
+			renderBtn = (
+				<div>
+					{renderLockBtn()}
+					<Button label="End" color="blue" onClick={() => handleDelete()} />
+				</div>
+			)
+		} else {
+			renderBtn = 'Matched'
+		}
 	} else {
 		renderBtn = (
 			<Button
 				label="Request"
 				color="blue"
 				onClick={e => {
-					props.onClick(e)
+					handleRequest()
 				}}
 			/>
 		)
@@ -112,7 +128,7 @@ export const CardContent = connect(mapStateToProps)(props => {
 
 //@props(mutiUser, object: user1(userName,rating), object: user1(userName,rating))
 export function CardUserInfo(props) {
-	const { user1, users, onlineUsers, ride } = props
+	const {user1, users, onlineUsers, ride} = props
 	function getRating(value) {
 		switch (value) {
 		case 1:
@@ -131,7 +147,7 @@ export function CardUserInfo(props) {
 	}
 	function renderRating(rating) {
 		return (
-			<span style={{ color: 'orange', fontSize: '1.2rem' }}>{`${getRating(Number(rating))}`}</span>
+			<span style={{color: 'orange', fontSize: '1.2rem'}}>{`${getRating(Number(rating))}`}</span>
 		)
 	}
 	function renderMatchUsers(users) {
@@ -150,7 +166,7 @@ export function CardUserInfo(props) {
 						<section className={user.host ? 'user-entry driver' : 'user-entry'} key={index}>
 							<Alert
 								className={
-									onlineUsers.find(_user => _user.id === user.id)
+									onlineUsers.find(data => data.user === user.id)
 										? 'user-status online'
 										: 'user-status'
 								}
@@ -183,9 +199,7 @@ export function CardUserInfo(props) {
 
 //@params ride
 export function CardJourney(props) {
-	const { ride, ...otherProps } = props
-	console.log(ride.scheduleDate)
-	console.log(moment(Number(ride.scheduleDate)).format('MMM Do'))
+	const {ride, ...otherProps} = props
 	return (
 		<main className="card-info-direction-container">
 			<section className="line-container">

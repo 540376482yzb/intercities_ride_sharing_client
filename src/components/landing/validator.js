@@ -6,7 +6,6 @@ export const noEmpty = value =>
 
 export const confirmPassword = field => (value, allValues) => {
 	if (field in allValues && value.trim() === allValues[field].trim()) {
-		console.log('match')
 		return undefined
 	}
 	return 'password is not matched'

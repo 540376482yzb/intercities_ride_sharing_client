@@ -14,7 +14,6 @@ export const SignUp = props => {
 
 	const submitMe = value => {
 		const { checkedPassword, ...newUser } = value
-		console.log(newUser)
 		return dispatch(registerUser(newUser))
 	}
 

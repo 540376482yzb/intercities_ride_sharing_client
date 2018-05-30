@@ -1,6 +1,5 @@
 export const normalizeResponseErrors = res => {
 	if (!res.ok) {
-		console.log('I have a problem')
 		if (
 			res.headers.has('content-type') &&
 			res.headers.get('content-type').startWith('application/json')

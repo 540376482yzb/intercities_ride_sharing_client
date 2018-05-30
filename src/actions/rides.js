@@ -40,7 +40,6 @@ export const fetchRides = () => (dispatch, getState) => {
 		.then(res => res.json())
 		.then(
 			rides => {
-				console.log(rides)
 				return dispatch(fetchRidesSuccess(rides))
 			},
 			err => dispatch(fetchRidesError(err))
@@ -82,35 +81,6 @@ export const addRide = ride => (dispatch, getState) => {
 		.then(rides => dispatch(addRideSuccess()), err => dispatch(addRideError(err)))
 }
 
-export const ASK_FOR_RIDE_ERROR = 'ASK_FOR_RIDE_ERROR'
-export const askForRideError = error => ({
-	type: ASK_FOR_RIDE_ERROR,
-	error
-})
-export const ASK_FOR_RIDE_SUCCESS = 'ASK_FOR_RIDE_SUCCESS'
-export const askForRideSuccess = rideId => ({
-	type: ASK_FOR_RIDE_SUCCESS,
-	rideId
-})
-export const askForRide = (rideId, userId) => (dispatch, getState) => {
-	const authToken = getState().auth.authToken
-
-	return fetch(`${API_BASE_URL}/board/requests/${rideId}`, {
-		method: 'PUT',
-		body: JSON.stringify({ userId }),
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${authToken}`
-		}
-	})
-		.then(res => normalizeResponseErrors(res))
-		.then(res => res.json())
-		.then(
-			res => dispatch(askForRideSuccess(res.content.ride.id)),
-			err => dispatch(askForRideError(err))
-		)
-}
-
 export const ACCEPT_RIDE_ERROR = 'ACCEPT_RIDE_ERROR'
 export const acceptRideError = error => ({
 	type: ACCEPT_RIDE_ERROR,
@@ -133,7 +103,7 @@ export const acceptRide = (driverId, passengerId, rideId) => (dispatch, getState
 }
 
 export const FETCH_RIDE_SUCCESS = 'FETCH_RIDE_SUCCESS'
-export const fetchRideSuccess = ride => ({
+export const fetchRideSuccess = (ride = null) => ({
 	type: FETCH_RIDE_SUCCESS,
 	ride
 })
@@ -208,7 +178,6 @@ export const editRide = (id, update) => (dispatch, getState) => {
 		.then(res => res.json())
 		.then(
 			ride => {
-				console.log('action 206', ride)
 				dispatch(editRideSuccess(ride))
 			},
 			err => {
@@ -217,55 +186,11 @@ export const editRide = (id, update) => (dispatch, getState) => {
 		)
 }
 
-export const CANCEL_MATCH_SUCCESS = 'CANCEL_MATCH_SUCCESS'
-export const cancelMatchSuccess = (matchedRideId, driverId, passengerId) => ({
-	type: CANCEL_MATCH_SUCCESS,
-	matchedRideId,
-	driverId,
-	passengerId
-})
-export const CANCEL_MATCH_ERROR = 'CANCEL_MATCH_ERROR'
-export const cancelMatchError = error => ({
-	type: CANCEL_MATCH_ERROR,
-	error
-})
-export const cancelMatch = matchedRide => (dispatch, getState) => {
-	const authToken = getState().auth.authToken
-	const driverId = matchedRide.match[0].id
-	const passengerId = matchedRide.match[1].id
-	return fetch(`${API_BASE_URL}/board/match/${matchedRide.id}`, {
-		method: 'DELETE',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${authToken}`
-		},
-		body: JSON.stringify({ driverId, passengerId })
-	})
-		.then(res => normalizeResponseErrors(res))
-		.then(res => res.json())
-		.then(
-			res => {
-				return dispatch(cancelMatchSuccess(matchedRide.id, driverId, passengerId))
-			},
-			err => {
-				return dispatch(cancelMatchError(err))
-			}
-		)
-}
-
-export const DELETE_RIDE_REQUEST = 'DELETE_RIDE_REQUEST'
-export const deleteRideRequest = () => ({
-	type: DELETE_RIDE_REQUEST
-})
 export const DELETE_RIDE_SUCCESS = 'DELETE_RIDE_SUCCESS'
 export const deleteRideSuccess = () => ({
 	type: DELETE_RIDE_SUCCESS
 })
-export const DELETE_RIDE_ERROR = 'DELETE_RIDE_ERROR'
-export const deleteRideError = error => ({
-	type: DELETE_RIDE_ERROR,
-	error
-})
+
 export const deleteRide = (rideId, currentUserId) => (dispatch, getState) => {
 	const authToken = getState().auth.authToken
 	return fetch(`${API_BASE_URL}/board/${rideId}`, {

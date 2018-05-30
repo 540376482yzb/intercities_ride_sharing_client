@@ -12,6 +12,7 @@
 		"react-google-maps": "^9.4.5",
 		"react-icons": "^2.2.7",
 		"react-places-autocomplete": "^7.1.2",
+		"react-rating": "^1.1.2",
 		"react-redux": "^5.0.7",
 		"react-router": "^4.2.0",
 		"react-router-dom": "^4.2.2",

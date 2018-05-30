@@ -1,8 +1,8 @@
 import React from 'react'
 import io from 'socket.io-client'
 import * as moment from 'moment'
-import { connect } from 'react-redux'
-import { Button } from '../utilities'
+import {connect} from 'react-redux'
+import {Button} from '../utilities'
 import './chat.css'
 import ChatIcon from 'react-icons/lib/io/chatboxes'
 import Return from 'react-icons/lib/io/arrow-return-left'
@@ -45,7 +45,6 @@ export class Chat extends React.Component {
 	handleSubmit = e => {
 		e.preventDefault()
 		this.props.sendMessage(this.input.value)
-		this.gotoBottom('chat')
 	}
 	gotoBottom(id) {
 		const el = document.getElementById(id)
@@ -53,6 +52,11 @@ export class Chat extends React.Component {
 	}
 	componentDidMount() {
 		this.gotoBottom('chat')
+	}
+	componentWillReceiveProps(nextProps) {
+		if (this.props.messages.length !== nextProps.messages.length) {
+			this.gotoBottom('chat')
+		}
 	}
 	renderSenderList(message) {
 		return (
@@ -93,39 +97,71 @@ export class Chat extends React.Component {
 			</div>
 		)
 	}
+
+	handleAcceptRide = (ride, userId) => {
+		const {socket} = this.props
+		clearTimeout(this.timer)
+		this.timer = setTimeout(() => {
+			socket.emit('ACCEPT_RIDE', {ride, userId})
+		}, 100)
+	}
+
 	render() {
-		const { messages, currentUser } = this.props
+		const {messages, currentUser, ride} = this.props
+		if (!ride || !messages || !currentUser) return <div />
 		return (
 			<div className="chat-outer">
 				<header className="chat-header">
 					<ChatIcon size={30} color="#29b4d6" />
-					<h3 style={{ textAlign: 'center' }}>Instant Message Board</h3>
+					<h3 style={{textAlign: 'center'}}>Instant Message Board</h3>
 				</header>
-				<main style={{ backgroundColor: '#FAFAFA' }}>
+				<main style={{backgroundColor: '#FAFAFA'}}>
 					<ul id="chat">
 						{messages.map((message, index) => {
 							if (message.type === 'broadcast') {
 								return (
-									<li key={index} style={{ margin: '0.8rem 0', color: 'grey' }}>
+									<li key={index} style={{margin: '0.8rem 0', color: 'grey'}}>
 										{message.body}
 									</li>
 								)
 							}
+							if (currentUser.host && message.type === 'application' && !message.completed) {
+								return (
+									<li key={index} style={{margin: '0.8rem 0', color: 'grey'}}>
+										{message.user.firstName} requests to join
+										<div>
+											<Button
+												label="Accept"
+												color="blue"
+												onClick={() => this.handleAcceptRide(ride, message.user.id)}
+											/>
+											<Button label="Decline" color="red" />
+										</div>
+									</li>
+								)
+							}
+							if (message.type === 'application' && message.completed) {
+								return (
+									<li key={index} style={{margin: '0.8rem 0', color: 'grey'}}>
+										{message.user.firstName} has been {message.completed}
+									</li>
+								)
+							}
 							return message.author.id === currentUser.id ? (
-								<li key={index} style={{ margin: '0.8rem 0' }}>
+								<li key={index} style={{margin: '0.8rem 0'}}>
 									{this.renderSenderList(message)}
 								</li>
 							) : (
-								<li key={index} style={{ margin: '0.8rem 0', textAlign: 'right' }}>
+								<li key={index} style={{margin: '0.8rem 0', textAlign: 'right'}}>
 									{this.renderReceiverList(message)}
 								</li>
 							)
 						})}
 					</ul>
 					<form onSubmit={this.handleSubmit}>
-						<div style={{ width: '100%', display: 'inline-block', position: 'relative' }}>
+						<div style={{width: '100%', display: 'inline-block', position: 'relative'}}>
 							<input
-								style={{ padding: '0.5rem 0.2rem', width: '100%', paddingRight: '45px' }}
+								style={{padding: '0.5rem 0.2rem', width: '100%', paddingRight: '45px'}}
 								type="text"
 								placeholder="message"
 								ref={ref => (this.input = ref)}
@@ -134,7 +170,7 @@ export class Chat extends React.Component {
 								type="submit"
 								color="white"
 								label={<Return size={12} />}
-								style={{ position: 'absolute', right: '1px', top: '1px', boxShadow: 'none' }}
+								style={{position: 'absolute', right: '1px', top: '1px', boxShadow: 'none'}}
 							/>
 						</div>
 					</form>
@@ -144,4 +180,10 @@ export class Chat extends React.Component {
 	}
 }
 
-export default connect()(Chat)
+const mapStateToProps = state => {
+	return {
+		socket: state.socket.socket,
+		ride: state.rideReducer.matchedRide
+	}
+}
+export default connect(mapStateToProps)(Chat)

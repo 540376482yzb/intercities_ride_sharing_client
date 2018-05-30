@@ -20,9 +20,7 @@ export class TabForm extends React.Component {
 		}
 	}
 	componentDidMount() {
-		console.log('component did mount')
 		if (this.props.authToken) {
-			console.log('redirecting')
 			this.props.history.push('/board')
 		}
 	}
@@ -32,7 +30,6 @@ export class TabForm extends React.Component {
 		})
 	}
 	render() {
-		console.log(this.state)
 		const activeStyle = { backgroundColor: '#00BCD4', color: 'white' }
 		const inActiveStyle = { backgroundColor: '#E5E5E5', color: 'grey' }
 		return (

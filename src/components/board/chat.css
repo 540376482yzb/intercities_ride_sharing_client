@@ -10,6 +10,7 @@
 
 #chat {
 	overflow-y: scroll;
+	overflow-x: hidden;
 	list-style-type: none;
 	min-height: 300px;
 	max-height: 400px;
