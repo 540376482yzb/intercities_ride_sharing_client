@@ -148,7 +148,7 @@ export class Match extends React.Component {
 						</div>
 						<div className="entry">
 							<MapWithAMarker
-								googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyC4R6AN7SmujjPUIGKdyao2Kqitzr1kiRg&v=3.exp&libraries=geometry,drawing,places"
+								googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyDre2JV9TmMIIXbaIlxwHwDjopIsSvs3ow&libraries=places"
 								loadingElement={<div style={{height: '100%'}} />}
 								containerElement={<div className="match-map" />}
 								mapElement={<div style={{height: '100%'}} />}
