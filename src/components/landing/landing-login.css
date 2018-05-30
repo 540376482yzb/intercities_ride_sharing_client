@@ -4,6 +4,7 @@
 	box-shadow: 0 5px 15px 0 rgba(16, 36, 94, 0.2);
 	border-radius: 5px;
 	color: rgb(118, 118, 118);
+	min-width: 320px;
 }
 
 .login-header {
@@ -38,4 +39,10 @@
 
 .login-info button {
 	margin: 5px 10px;
+}
+
+@media screen and (min-width: 500px) {
+	.login-page {
+		width: 450px;
+	}
 }
