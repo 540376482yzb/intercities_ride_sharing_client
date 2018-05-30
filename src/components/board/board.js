@@ -14,6 +14,7 @@ import SearchForm from './search-form'
 import {Button} from '../utilities'
 import {hostOpen} from '../../actions/utils'
 import HostForm from './host-form.js'
+
 export class Board extends React.Component {
 	constructor(props) {
 		super(props)

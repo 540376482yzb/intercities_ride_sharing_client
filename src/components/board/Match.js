@@ -88,7 +88,7 @@ export class Match extends React.Component {
 			.then(() => {
 				// init socket if not already
 				if (!socket) {
-					const newSocket = io('localhost:8080')
+					const newSocket = io('https://ride-share-server.herokuapp.com')
 					return dispatch(initializeSocket(newSocket))
 				}
 			})

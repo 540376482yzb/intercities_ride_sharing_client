@@ -1,20 +1,20 @@
 import React from 'react'
-import { reduxForm, Field, SubmissionError, focus } from 'redux-form'
-import { required, noEmpty, tooShort } from './validator'
-import { TextInput } from './input-text'
-import { connect } from 'react-redux'
-import { authUser } from '../../actions/auth'
-import { Button } from '../utilities'
+import {reduxForm, Field, SubmissionError, focus} from 'redux-form'
+import {required, noEmpty, tooShort} from './validator'
+import {TextInput} from './input-text'
+import {connect} from 'react-redux'
+import {authUser} from '../../actions/auth'
+import {Button} from '../utilities'
 import './landing-login.css'
 import LoginIcon from 'react-icons/lib/io/log-in'
-import { Link } from 'react-router-dom'
+import {Link} from 'react-router-dom'
 
 export class LogIn extends React.Component {
 	submitMe = value => {
 		return this.props.dispatch(authUser(value))
 	}
 	render() {
-		const { submitSucceeded, error, handleSubmit, pristine, submitting } = this.props
+		const {submitSucceeded, error, handleSubmit, pristine, submitting} = this.props
 
 		let successMessage
 		if (submitSucceeded) {
@@ -70,8 +70,16 @@ export class LogIn extends React.Component {
 				</section>
 				<section className="login-info">
 					<p>For demo purpose:</p>
-					<Button label="Demo host" color="blue" />
-					<Button label="Demo passenger" color="blue" />
+					<Button
+						label="Demo host"
+						color="blue"
+						onClick={this.demoLogIn({email: 'demo1@gmail.com', password: 'demo12345'})}
+					/>
+					<Button
+						label="Demo passenger"
+						color="blue"
+						onClick={this.demoLogIn({email: 'demo2@gmail.com', password: 'demo12345'})}
+					/>
 				</section>
 			</main>
 		)
