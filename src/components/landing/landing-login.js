@@ -13,6 +13,10 @@ export class LogIn extends React.Component {
 	submitMe = value => {
 		return this.props.dispatch(authUser(value))
 	}
+
+	demoLogIn = value => {
+		return this.props.dispatch(authUser(value))
+	}
 	render() {
 		const {submitSucceeded, error, handleSubmit, pristine, submitting} = this.props
 
@@ -73,12 +77,12 @@ export class LogIn extends React.Component {
 					<Button
 						label="Demo host"
 						color="blue"
-						onClick={this.demoLogIn({email: 'demo1@gmail.com', password: 'demo12345'})}
+						onClick={() => this.demoLogIn({email: 'demo1@gmail.com', password: 'demo12345'})}
 					/>
 					<Button
 						label="Demo passenger"
 						color="blue"
-						onClick={this.demoLogIn({email: 'demo2@gmail.com', password: 'demo12345'})}
+						onClick={() => this.demoLogIn({email: 'demo2@gmail.com', password: 'demo12345'})}
 					/>
 				</section>
 			</main>
