@@ -37,10 +37,10 @@
 	font-weight: bold;
 }
 .ad-desc p {
-	font-size: 18px;
+	font-size: 1rem;
 }
 .ad-desc p b {
-	font-size: 15px;
+	font-size: 1rem;
 }
 
 @media screen and (min-width: 780px) {

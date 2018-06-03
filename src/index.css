@@ -6,10 +6,12 @@ body {
 	min-height: 100%;
 	overflow-x: hidden;
 	background-color: white;
+
 }
 html {
 	height: 100%;
 	width: 100vw;
+	font-size: 14px;
 }
 
 @media screen and (min-width: 642px) {
